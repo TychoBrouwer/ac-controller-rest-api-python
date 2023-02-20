@@ -13,11 +13,12 @@ This is a project for the USE course Detailing, realization and RPC test - group
    - After installation run ```git config --global user.name "Your GitHub name here"```.
    - And run ```git config --global user.email "Your GitHub email here"```.
 4. Download or make sure **Python3** is installed, from [here](https://www.python.org/downloads/).
-5. Make a folder for the project on your pc (no spaces to make it easier).
-6. Run ```cd path/project/directory``` in the terminal to navigate to your project folder.
-7. Run ```git clone https://github.com/TychoBrouwer/ac-controller-rest-api-python.git``` to clone the Git repository in the current directory.
-8. Run ```git branch -M main``` to set the Git branch.
-9. Run ```flask --app server run``` to start the Python server.
+5. Run ```pip install Flask``` to install Flask using pip (may need to run ```pip3``` instead of ```pip```).
+6. Make a folder for the project on your pc (no spaces to make it easier).
+7. Run ```cd path/project/directory``` in the terminal to navigate to your project folder.
+8. Run ```git clone https://github.com/TychoBrouwer/ac-controller-rest-api-python.git``` to clone the Git repository in the current directory.
+9. Run ```git branch -M main``` to set the Git branch.
+10. Run ```flask --app server run``` to start the Python server.
 
 ### To pull updates from the origin repository
 
@@ -34,4 +35,5 @@ This is a project for the USE course Detailing, realization and RPC test - group
 ## Running the Flask Server
 
 Run the server with ```flask --app server run```
+
 Run the other scripts with ```python "SCRIPT_NAME"``` or ```python3 "SCRIPT_NAME"```
