@@ -94,7 +94,7 @@ if __name__ == "__main__":
     except socket.error as e:
         print(str(e))
 
-    print('Socket is listening...')
+    print(f'Socket is listening on {SERVER_IP}:{SERVER_SOCKET_PORT}')
     ServerSideSocket.listen(5)
 
     # Start listening to new device connections 
