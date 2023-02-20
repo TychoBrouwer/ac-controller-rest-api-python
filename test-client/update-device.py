@@ -13,7 +13,7 @@ Data = {
 }
 
 # Send request to server
-x = requests.post(url, json = Data)
+x = requests.get(url, params = Data)
 
 # Get returned data (update request result)
 print(x.text)

@@ -9,7 +9,7 @@ ClientSocket = socket.socket()
 # Connect to server socket
 print('Waiting for connection response')
 try:
-    ClientSocket.connect((f'{SERVER_ADRESS}/socket', SERVER_SOCKET_PORT))
+    ClientSocket.connect((SERVER_ADDRESS, SERVER_SOCKET_PORT))
 except socket.error as e:
     print(str(e))
 

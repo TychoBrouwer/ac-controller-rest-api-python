@@ -12,7 +12,7 @@ Data = {
 }
 
 # Send request to server
-x = requests.post(url, json = Data)
+x = requests.get(url, params = Data)
 
 # Get returned data (current device settings)
 print(x.text)

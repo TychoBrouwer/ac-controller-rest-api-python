@@ -12,13 +12,12 @@ app = Flask(__name__)
 def server_running():
     return 'Server running!', 200
 
-@app.route("/update-device", methods=['POST', 'GET'])
+@app.route("/update-device", methods=['GET'])
 def update_client():
     # Get the request data
-    RequestData = request.get_json()
-    DeviceID = RequestData['DeviceID']
-    ClientID = RequestData['ClientID']
-    Data = RequestData['Data']
+    DeviceID = request.args.get('DeviceID')
+    ClientID = request.args.get('ClientID')
+    Data = request.args.get('Data')
 
     # Check if device is connected
     if DeviceID not in Devices:
@@ -34,12 +33,11 @@ def update_client():
     # Return success code
     return '', 204
 
-@app.route("/get-device", methods=['POST', 'GET'])
+@app.route("/get-device", methods=['GET'])
 def get_client():
     # Get the request data
-    RequestData = request.get_json()
-    DeviceID = RequestData['DeviceID']
-    ClientID = RequestData['ClientID']
+    DeviceID = request.args.get('DeviceID')
+    ClientID = request.args.get('ClientID')
 
     # Check if device is connected
     if DeviceID not in Devices:
