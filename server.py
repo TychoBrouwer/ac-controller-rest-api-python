@@ -90,15 +90,15 @@ ServerSideSocket = socket.socket()
 
 if __name__ == "__main__":
     try:
-        ServerSideSocket.bind((SERVER_IP, SERVER_SOCKET_PORT))
+        ServerSideSocket.bind((SERVER_IP, SERVER_FLASK_PORT))
     except socket.error as e:
         print(str(e))
 
-    print(f'Socket is listening on {SERVER_IP}:{SERVER_SOCKET_PORT}')
+    print(f'Socket is listening on {SERVER_IP}:{SERVER_FLASK_PORT}')
     ServerSideSocket.listen(5)
 
     # Start listening to new device connections 
     start_new_thread(socket_connection_loop, ())
 
     # Start Flask app
-    app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
+    app.run(host=SERVER_IP, port=SERVER_SOCKET_PORT)
