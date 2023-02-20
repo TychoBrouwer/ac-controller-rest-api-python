@@ -1,6 +1,6 @@
 # Python rest API for the air conditioning controller
 
-This is a project for the USE course Detailing, realization and RPC test - group 17. Instructions on how to use GitHub are below.
+This is a project for the USE course Detailing, realization and RPC test - group 17. Instructions on how to use GitHub and the Flask server are below.
 
 ## Installation
 
@@ -22,16 +22,16 @@ This is a project for the USE course Detailing, realization and RPC test - group
 ### To pull updates from the origin repository
 
 1. Run ```cd path/project/directory``` to navigate to your project folder.
-2. Run ```git pull origin main``` to pull the changes from the repository.
+2. Run ```git pull``` to pull the changes from the repository.
 
 ### To push updates to the origin repository
 
 1. Run ```cd path/project/directory``` to navigate to your project folder.
 2. Run ```git add .``` to track the changes made.
 3. Run ```git commit -m "USEFUL UPDATE MESSAGE"``` to commit the changes to the branch.
-4. Run ```git push origin main``` to push the changes to the repository.
+4. Run ```git push``` to push the changes to the repository.
 
-## Running the Server
+## Running the Flask Server
 
 Run the server with ```flask --app server run```
 Run the other scripts with ```python "SCRIPT_NAME"``` or ```python3 "SCRIPT_NAME"```
