@@ -10,6 +10,7 @@ ClientSocket = socket.socket()
 print('Waiting for connection response')
 try:
     ClientSocket.connect((SERVER_ADDRESS, SERVER_SOCKET_PORT))
+    # ClientSocket.connect((SERVER_IP, SERVER_SOCKET_PORT))
 except socket.error as e:
     print(str(e))
 
