@@ -1,1 +1,3 @@
 SERVER_ADRESS = "accontroller.tbrouwer.com"
+SERVER_SOCKET_PORT = 65432
+SERVER_FLASK_PORT = 5000
