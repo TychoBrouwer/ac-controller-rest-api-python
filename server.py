@@ -12,7 +12,7 @@ app = Flask(__name__)
 def server_running():
     return 'Server running!', 200
 
-@app.route("/api/update-device", methods=['POST'])
+@app.route("/update-device", methods=['POST'])
 def update_client():
     # Get the request data
     RequestData = request.get_json()
@@ -34,7 +34,7 @@ def update_client():
     # Return success code
     return '', 204
 
-@app.route("/api/get-device", methods=['POST'])
+@app.route("/get-device", methods=['POST'])
 def get_client():
     # Get the request data
     RequestData = request.get_json()

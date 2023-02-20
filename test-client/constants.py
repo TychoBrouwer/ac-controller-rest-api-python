@@ -1,3 +1,4 @@
-SERVER_ADRESS = "accontroller.tbrouwer.com"
+SERVER_IP = "213.134.226.55"
+SERVER_ADDRESS = "accontroller.tbrouwer.com"
 SERVER_SOCKET_PORT = 65432
 SERVER_FLASK_PORT = 5000
