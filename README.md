@@ -37,3 +37,9 @@ This is a project for the USE course Detailing, realization and RPC test - group
 Run the server with ```flask --app server run```
 
 Run the other scripts with ```python "SCRIPT_NAME"``` or ```python3 "SCRIPT_NAME"```
+
+## Project
+
+This project aims to allow an IR controlled air conditioner to become a smart air conditioner. The user can control their AC unit remotely using an app. This is achieved by forwaring the request from the remote device to a local device, which uses an IR transmitter to control the AC unit. The server can also relay weather information to the local device for smart temperature control by the air conditioner.
+
+This repository hosts the code for the server which acts as the bridge between the local device and the remote client.
