@@ -5,7 +5,7 @@ from constants import *
 
 # Set url and data for request (for getting device settings)
 # url = f'http://{SERVER_IP}:{SERVER_FLASK_PORT}/get-device'
-url = f'http://{SERVER_ADDRESS}/get-device'
+url = f'https://{SERVER_ADDRESS}/get-device'
 Data = {
   'ClientID': 'CLIENT IDENTIFIER',
   'DeviceID': 'DEVICE IDENTIFIER',
