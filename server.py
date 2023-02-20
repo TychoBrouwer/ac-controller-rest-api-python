@@ -8,6 +8,10 @@ from constants import *
 # Initialize flask server
 app = Flask(__name__)
 
+@app.route("/")
+def server_running():
+    return 'Server running!', 200
+
 @app.route("/update-device", methods=['POST'])
 def update_client():
     # Get the request data
