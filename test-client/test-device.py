@@ -3,14 +3,15 @@ import socket
 # Import constants files
 from constants import *
 
-# Initiate socket
-ClientSocket = socket.socket()
+# Initiate TCP socket
+ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ClientSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # Connect to server socket
 print('Waiting for connection response')
 try:
-    # ClientSocket.connect((SERVER_ADDRESS, SERVER_SOCKET_PORT))
-    ClientSocket.connect((SERVER_IP, SERVER_SOCKET_PORT))
+    ClientSocket.connect((SERVER_ADDRESS, SERVER_SOCKET_PORT))
+    # ClientSocket.connect((SERVER_IP, SERVER_SOCKET_PORT))
 except socket.error as e:
     print(str(e))
 
