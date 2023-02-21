@@ -15,57 +15,73 @@ def server_running():
     return 'Server running!', 200
 
 @app.route("/update-device", methods=['GET'])
-def update_client():
+async def update_client():
     # Get the request data
     DeviceID = request.args.get('DeviceID')
     ClientID = request.args.get('ClientID')
     Data = request.args.get('Data')
 
-    print(Devices.keys)
-    print(Devices)
+    # Check if all arguments are supplied
+    if not (DeviceID or ClientID or Data):
+        return 'not enough arguments supplied', 400
 
     # Check if device is connected
     if DeviceID not in Devices:
-        return 'device could not be found', 404
+        return 'device could not be found', 400
 
     # Check if client has permission
     if ClientID not in DevicePermissions[DeviceID]:
-        return 'no permission to update', 403
+        return 'no permission to update', 405
     
     # Send update data to device
-    Devices[DeviceID].send(str.encode(Data))
+    await socket_send(Devices[DeviceID], str.encode(Data))
 
     # Return success code
     return '', 204
 
 @app.route("/get-device", methods=['GET'])
-def get_client():
+async def get_client():
     # Get the request data
     DeviceID = request.args.get('DeviceID')
     ClientID = request.args.get('ClientID')
 
+    # Check if all arguments are supplied
+    if not (DeviceID or ClientID):
+        return 'not enough arguments supplied', 400
+
     # Check if device is connected
     if DeviceID not in Devices:
-        return 'device could not be found', 404
+        return 'device could not be found', 400
 
     # Check if client has permission
     if ClientID not in DevicePermissions[DeviceID]:
-        return 'no permission to update', 403
+        return 'no permission to update', 405
     
     # Send data request to the device 
-    Devices[DeviceID].send(str.encode('get-settings'))
+    await socket_send(Devices[DeviceID], str.encode('get-settings'))
 
     # Receive data from device
-    data = Devices[DeviceID].recv()
+    data = await socket_receive(Devices[DeviceID])
+    
     # Return data to client
+    return data
+
+async def socket_send(websocket, data):
+    # Send server connection conformation to device
+    await websocket.send(data)
+
+async def socket_receive(websocket):
+    # Send server connection conformation to device
+    data = (await websocket.recv()).decode("utf-8")
+
     return data
 
 async def socket_handler(websocket):
     # Send server connection conformation to device
-    await websocket.send(str.encode('Server is working!'))
+    await socket_send(websocket, str.encode('Server is working!'))
 
     # Receive device identifier from device
-    DeviceID = (await websocket.recv()).decode("utf-8")
+    DeviceID = await socket_receive(websocket)
     if DeviceID:
         # Store device identifier in currently connected dict
         Devices[DeviceID] = websocket
