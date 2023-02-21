@@ -1,29 +1,21 @@
-# import socket
-from _thread import *
 from flask import Flask, request
-# import asyncio
-# import websockets
 
-# Import constants files
+# Import files
 from constants import *
 from socket_connection import *
 
 # Initialize flask server
 app = Flask(__name__)
 
-@app.route("/")
-def server_running():
-    return 'Server running!', 200
-
 @app.route("/update-device", methods=['GET'])
 async def update_client():
     # Get the request data
-    deviceID = request.args.get('DeviceID')
-    clientID = request.args.get('ClientID')
-    Data = request.args.get('Data')
+    deviceID = request.args.get('deviceID')
+    clientID = request.args.get('clientID')
+    data = request.args.get('data')
 
     # Check if all arguments are supplied
-    if not (deviceID or clientID or Data):
+    if not (deviceID or clientID or data):
         return 'not enough arguments supplied', 400
 
     # Check if device is connected
@@ -31,11 +23,11 @@ async def update_client():
         return 'device could not be found', 400
 
     # Check if client has permission
-    if clientID not in DevicePermissions[deviceID]:
+    if clientID not in devicePermissions[deviceID]:
         return 'no permission to update', 405
     
     # Send update data to device
-    await socketConnection.send(deviceID, str.encode(Data))
+    await socketConnection.send(deviceID, str.encode(data))
 
     # Return success code
     return '', 204
@@ -43,8 +35,8 @@ async def update_client():
 @app.route("/get-device", methods=['GET'])
 async def get_client():
     # Get the request data
-    deviceID = request.args.get('DeviceID')
-    clientID = request.args.get('ClientID')
+    deviceID = request.args.get('deviceID')
+    clientID = request.args.get('clientID')
 
     # Check if all arguments are supplied
     if not (deviceID or clientID):
@@ -55,60 +47,50 @@ async def get_client():
         return 'device could not be found', 400
 
     # Check if client has permission
-    if clientID not in DevicePermissions[deviceID]:
+    if clientID not in devicePermissions[deviceID]:
         return 'no permission to update', 405
-    
+
     # Send data request to the device 
     await socketConnection.send(deviceID, str.encode('get-settings'))
 
     # Receive data from device
     data = await socketConnection.receive(deviceID)
-    
+
     # Return data to client
     return data
 
-# async def socket_send(websocket, data):
-#     # Send server connection conformation to device
-#     await websocket.send(data)
+@app.route("/add-client", methods=['GET'])
+async def add_client():
+    # Get the request data
+    deviceID = request.args.get('deviceID')
+    clientID = request.args.get('clientID')
 
-# async def socket_receive(websocket):
-#     # Send server connection conformation to device
-#     data = (await websocket.recv()).decode("utf-8")
+    # Check if all arguments are supplied
+    if not (deviceID or clientID):
+        return 'not enough arguments supplied', 400
 
-#     return data
+    # Check if device is connected
+    if not socketConnection.connected(deviceID):
+        return 'device could not be found', 400
 
-# async def socket_handler(websocket):
-#     # Send server connection conformation to device
-#     await socket_send(websocket, str.encode('Server is working!'))
+    # Check if client has permission
+    if clientID not in devicePermissions[deviceID]:
+        return 'no permission to update', 405
 
-#     # Receive device identifier from device
-#     DeviceID = await socket_receive(websocket)
-#     if DeviceID:
-#         # Store device identifier in currently connected dict
-#         Devices[DeviceID] = websocket
-#         print(f'new device connection: {websocket.remote_address}, {DeviceID}')
+    # Add clientID to the permissions for deviceID
+    devicePermissions[deviceID].append(clientID)
 
-#     # Keep websocket connection open
-#     while True:
-#         await asyncio.sleep(1)
-
-# async def socket_connection():
-#     # Serve websocket on all network interfaces at selected port
-#     async with websockets.serve(socket_handler, "", SERVER_SOCKET_PORT):
-#         await asyncio.Future()  # run socket forever
+    # Return success code
+    return '', 204
 
 # Permissions of the client identifiers and their devices
-DevicePermissions = {
+devicePermissions = {
     'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
 }
 
-# Currently connected devices
-# Devices = {}
+# Start socket connection
 socketConnection = SocketConnection(SERVER_SOCKET_PORT);
 
 if __name__ == "__main__":
-    # Start websocket in new thread
-    # start_new_thread(asyncio.run, (socket_connection(),))
-
     # Start Flask app
     app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
