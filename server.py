@@ -21,10 +21,8 @@ def update_client():
     ClientID = request.args.get('ClientID')
     Data = request.args.get('Data')
 
-    print('TESTTESTTES')
     print(Devices.keys)
     print(Devices)
-    print('TESTTESTTES')
 
     # Check if device is connected
     if DeviceID not in Devices:
@@ -67,7 +65,7 @@ async def socket_handler(websocket):
     await websocket.send(str.encode('Server is working!'))
 
     # Receive device identifier from device
-    DeviceID = await websocket.recv()
+    DeviceID = (await websocket.recv()).decode("utf-8")
     if DeviceID:
         # Store device identifier in currently connected dict
         Devices[DeviceID] = websocket
