@@ -21,7 +21,7 @@ from constants import *
 # ClientSocket.send(str.encode('DEVICE IDENTIFIER'))
 
 async def socket_connection():
-    async with websockets.connect(f'ws://localhost:{SERVER_SOCKET_PORT}') as websocket:
+    async with websockets.connect(f'ws://{SERVER_IP}:{SERVER_SOCKET_PORT}') as websocket:
         res = await websocket.recv()
         print(res)
 

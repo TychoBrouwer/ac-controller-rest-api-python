@@ -21,6 +21,8 @@ def update_client():
     ClientID = request.args.get('ClientID')
     Data = request.args.get('Data')
 
+    print(Devices.keys)
+
     # Check if device is connected
     if DeviceID not in Devices:
         return 'device could not be found', 404
@@ -66,7 +68,7 @@ async def socket_handler(websocket):
     if DeviceID:
         # Store device identifier in currently connected dict
         Devices[DeviceID] = websocket
-        print(DeviceID)
+        print(f'new device connection: {DeviceID}')
 
     # Keep websocket connection open
     while True:
