@@ -1,7 +1,7 @@
 import requests
 
 # Import constants files
-from constants import *
+from constants import SERVER_API_ADDRESS
 
 # Set url and data for request (for getting device settings)
 url = f'https://{SERVER_API_ADDRESS}/get-device'

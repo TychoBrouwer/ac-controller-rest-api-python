@@ -3,7 +3,7 @@ import asyncio
 import websockets
 
 # Import constants files
-from constants import *
+from constants import SERVER_SOCKET_ADDRESS
 
 async def socket_connection():
     # Connect to websocket

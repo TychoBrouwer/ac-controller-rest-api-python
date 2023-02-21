@@ -2,7 +2,7 @@ from flask import Flask, request
 
 # Import files
 from constants import *
-from socket_connection import *
+from socket_connection import SocketConnection
 
 # Initialize flask server
 app = Flask(__name__)
