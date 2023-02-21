@@ -30,7 +30,7 @@ class SocketConnection:
         await websocket.send(str.encode('Server is working!'))
 
         # Receive device identifier from device
-        deviceID = await websocket.recv()
+        deviceID = (await websocket.recv()).decode("utf-8")
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
