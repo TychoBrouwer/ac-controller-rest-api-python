@@ -1,6 +1,8 @@
-import socket
+# import socket
 from _thread import *
 from flask import Flask, request
+import asyncio
+import websockets
 
 # Import constants files
 from constants import *
@@ -28,7 +30,7 @@ def update_client():
         return 'no permission to update', 403
     
     # Send update data to device
-    Devices[DeviceID].sendall(str.encode(Data))
+    Devices[DeviceID].send(str.encode(Data))
 
     # Return success code
     return '', 204
@@ -48,57 +50,44 @@ def get_client():
         return 'no permission to update', 403
     
     # Send data request to the device 
-    Devices[DeviceID].sendall(str.encode('get-settings'))
+    Devices[DeviceID].send(str.encode('get-settings'))
 
     # Receive data from device
-    data = Devices[DeviceID].recv(2048)
+    data = Devices[DeviceID].recv()
     # Return data to client
     return data
 
-def initiate_device(connection):
-    # Send server conformation to device
-    connection.send(str.encode('Server is working!'))
+async def socket_handler(websocket):
+    # Send server connection conformation to device
+    await websocket.send(str.encode('Server is working!'))
 
-    # Receive device indentifier from device
-    data = connection.recv(2048)
-    if data:
+    # Receive device identifier from device
+    DeviceID = await websocket.recv()
+    if DeviceID:
         # Store device identifier in currently connected dict
-        Devices[data.decode('utf-8')] = connection
+        Devices[DeviceID] = websocket
+        print(DeviceID)
 
-def socket_connection_loop():
-    # Loop for eccepting new device connections
+    # Keep websocket connection open
     while True:
-        # Accept new device connection
-        connection, address = ServerSideSocket.accept()
-        print(f'Connected to {address[0]}:{address[1]}')
+        await asyncio.sleep(1)
 
-        # Initiate device connection
-        initiate_device(connection)
+async def socket_connection():
+    # Serve websocket on all network interfaces at selected port
+    async with websockets.serve(socket_handler, "", SERVER_SOCKET_PORT):
+        await asyncio.Future()  # run socket forever
 
-    ServerSideSocket.close()
-    
 # Permissions of the client identifiers and their devices
 DevicePermissions = {
     'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
 }
 
-# Currenly connected devices
+# Currently connected devices
 Devices = {}
 
-# Initialize socket
-ServerSideSocket = socket.socket()
-
 if __name__ == "__main__":
-    try:
-        ServerSideSocket.bind((SERVER_IP, SERVER_SOCKET_PORT))
-    except socket.error as e:
-        print(str(e))
-
-    print(f'Socket is listening on {SERVER_IP}:{SERVER_SOCKET_PORT}')
-    ServerSideSocket.listen(5)
-
-    # Start listening to new device connections 
-    start_new_thread(socket_connection_loop, ())
+    # Start websocket in new thread
+    start_new_thread(asyncio.run, (socket_connection(),))
 
     # Start Flask app
     app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
