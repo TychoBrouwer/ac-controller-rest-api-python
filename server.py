@@ -85,7 +85,7 @@ async def socket_handler(websocket):
     if DeviceID:
         # Store device identifier in currently connected dict
         Devices[DeviceID] = websocket
-        print(f'new device connection: {DeviceID}')
+        print(f'new device connection: {DeviceID}, {websocket.remote_address}')
 
     # Keep websocket connection open
     while True:

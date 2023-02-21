@@ -1,4 +1,2 @@
-SERVER_IP = "213.134.226.55"
-SERVER_ADDRESS = "accontroller.tbrouwer.com"
-SERVER_SOCKET_PORT = 8880
-SERVER_FLASK_PORT = 5000
+SERVER_SOCKET_ADDRESS = "accontroller-socket.tbrouwer.com"
+SERVER_API_ADDRESS = "accontroller-api.tbrouwer.com"

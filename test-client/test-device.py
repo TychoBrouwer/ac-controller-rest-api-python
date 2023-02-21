@@ -7,8 +7,7 @@ from constants import *
 
 async def socket_connection():
     # Connect to websocket
-    async with websockets.connect(f'ws://{SERVER_ADDRESS}') as websocket:
-    # async with websockets.connect(f'ws://{SERVER_IP}:{SERVER_SOCKET_PORT}') as websocket:
+    async with websockets.connect(f'wss://{SERVER_SOCKET_ADDRESS}') as websocket:
         # Receive server conformation
         res = (await websocket.recv()).decode("utf-8")
         print(res)
