@@ -21,7 +21,10 @@ def update_client():
     ClientID = request.args.get('ClientID')
     Data = request.args.get('Data')
 
+    print('TESTTESTTES')
     print(Devices.keys)
+    print(Devices)
+    print('TESTTESTTES')
 
     # Check if device is connected
     if DeviceID not in Devices:
