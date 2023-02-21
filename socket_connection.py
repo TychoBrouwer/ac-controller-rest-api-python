@@ -27,10 +27,10 @@ class SocketConnection:
 
     async def socket_handler(self, websocket):
         # Send server connection conformation to device
-        await self.send(websocket, str.encode('Server is working!'))
+        await websocket.send(str.encode('Server is working!'))
 
         # Receive device identifier from device
-        deviceID = await self.receive(websocket)
+        deviceID = await websocket.recv()
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
