@@ -10,7 +10,7 @@ class SocketConnection:
 
     async def send(self, deviceID, data):
         # Send server connection conformation to device
-        await self.devices[deviceID].send(data)
+        await self.devices[deviceID].send_text(data)
 
     async def receive(self, deviceID):
         # Send server connection conformation to device
@@ -20,10 +20,10 @@ class SocketConnection:
 
     async def socket_handler(self, websocket):
         # Send server connection conformation to device
-        await websocket.send('Server is working!')
+        await websocket.send_text('Server is working!')
 
         # Receive device identifier from device
-        deviceID = (await websocket.recv()).decode("utf-8")
+        deviceID = (await websocket.receive_text()).decode("utf-8")
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
