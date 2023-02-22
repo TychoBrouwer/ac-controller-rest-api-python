@@ -1,4 +1,5 @@
 import requests
+import json
 
 # Import constants files
 from constants import SERVER_ADDRESS
@@ -14,4 +15,4 @@ data = {
 x = requests.get(url, params = data)
 
 # Get returned data (current device settings)
-print(x.text)
+print(json.dumps(x))

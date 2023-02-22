@@ -1,9 +1,14 @@
 # import socket
 import asyncio
 import websockets
+import json
 
 # Import constants files
 from constants import SERVER_ADDRESS
+
+settings = {
+    'deviceID': 'DEVICE IDENTIFIER',
+}
 
 async def socket_connection():
     # Connect to websocket
@@ -13,17 +18,21 @@ async def socket_connection():
         print(res)
 
         # Send device identifier to server
-        await websocket.send('DEVICE IDENTIFIER')
+        await websocket.send(settings['deviceID'])
 
         while True:
             # Receive data from server
-            res = await websocket.recv()
+            res = json.loads(await websocket.recv())
             print(res)
 
             # If get settings request is received send settings to server  
-            if res == 'get-settings':
-                # ClientSocket.send(str.encode('DEVICE IDENTIFIER'))
-                await websocket.send('DEVICE IDENTIFIER')
+            if res.op == 'get-settings':
+                await websocket.send(json.dumps(settings))
+
+            if res.op == 'update-settings':
+                settings = res.settings
+
+                print(res.settings)
 
 # Start socket connection function
 asyncio.run(socket_connection())

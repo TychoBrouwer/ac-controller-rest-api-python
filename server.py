@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
+import json
 
 # Import files
 from constants import *
@@ -13,7 +14,7 @@ def root():
     return 'server is running and reachable!'
 
 @app.get("/update-device")
-async def update_client(deviceID: str, clientID: str, data: str):
+async def update_client(deviceID: str, clientID: str, data: json):
     # Check if all arguments are supplied
     if not (deviceID or clientID or data):
         return 'not enough arguments supplied', 400
@@ -46,8 +47,12 @@ async def get_client(deviceID: str, clientID: str):
     if clientID not in devicePermissions[deviceID]:
         return 'no permission to update', 405
 
+    data = {
+        'op': 'get-settings'
+    }
+
     # Send data request to the device 
-    await socketConnection.send(deviceID, str.encode('get-settings'))
+    await socketConnection.send(deviceID, data)
 
     # Receive data from device
     data = await socketConnection.receive(deviceID)
