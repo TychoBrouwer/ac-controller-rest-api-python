@@ -1,10 +1,14 @@
+from _thread import *
 import asyncio
+import websockets
 
 # Currently connected devices
 class SocketConnection:
-    def __init__(self):
+    def __init__(self, port):
         self.devices = {}
         
+        asyncio.run(self.socket_connection(port),)
+
     def connected(self, deviceID):
         return deviceID in self.devices
 
@@ -32,4 +36,8 @@ class SocketConnection:
         # Keep websocket connection open
         while True:
             await asyncio.sleep(1)
-            
+
+    async def socket_connection(self, port):
+        # Serve websocket on all network interfaces at selected port
+        async with websockets.serve(self.socket_handler, "", port):
+            await asyncio.Future()  # run socket forever

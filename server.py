@@ -1,18 +1,21 @@
-from flask import Flask, request
+# from flask import Flask, request
+from fastapi import FastAPI, WebSocket
 
 # Import files
 from constants import *
 from socket_connection import SocketConnection
 
 # Initialize flask server
-app = Flask(__name__)
+# app = Flask(__name__)
+app = FastAPI()
 
-@app.route("/update-device", methods=['GET'])
-async def update_client():
-    # Get the request data
-    deviceID = request.args.get('deviceID')
-    clientID = request.args.get('clientID')
-    data = request.args.get('data')
+# @app.route("/update-device", methods=['GET'])
+@app.get("/update-device")
+async def update_client(deviceID: str, clientID: str, data: str):
+    # # Get the request data
+    # deviceID = request.args.get('deviceID')
+    # clientID = request.args.get('clientID')
+    # data = request.args.get('data')
 
     # Check if all arguments are supplied
     if not (deviceID or clientID or data):
@@ -27,16 +30,17 @@ async def update_client():
         return 'no permission to update', 405
     
     # Send update data to device
-    await socketConnection.send(deviceID, str.encode(data))
+    await socketConnection.send(deviceID, data)
 
     # Return success code
     return '', 204
 
-@app.route("/get-device", methods=['GET'])
-async def get_client():
-    # Get the request data
-    deviceID = request.args.get('deviceID')
-    clientID = request.args.get('clientID')
+@app.get("/get-device")
+# @app.route("/get-device", methods=['GET'])
+async def get_client(deviceID: str, clientID: str):
+    # # Get the request data
+    # deviceID = request.args.get('deviceID')
+    # clientID = request.args.get('clientID')
 
     # Check if all arguments are supplied
     if not (deviceID or clientID):
@@ -59,11 +63,12 @@ async def get_client():
     # Return data to client
     return data
 
-@app.route("/add-client", methods=['GET'])
-async def add_client():
-    # Get the request data
-    deviceID = request.args.get('deviceID')
-    clientID = request.args.get('clientID')
+# @app.route("/add-client", methods=['GET'])
+@app.get("/add-client")
+async def add_client(deviceID: str, clientID: str):
+    # # Get the request data
+    # deviceID = request.args.get('deviceID')
+    # clientID = request.args.get('clientID')
 
     # Check if all arguments are supplied
     if not (deviceID or clientID):
@@ -83,13 +88,18 @@ async def add_client():
     # Return success code
     return '', 204
 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    await socketConnection.socket_handler(websocket)
+
 # Permissions of the client identifiers and their devices
 devicePermissions = {
     'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
 }
 
 # Start socket connection
-socketConnection = SocketConnection(SERVER_SOCKET_PORT);
+socketConnection = SocketConnection();
 
 if __name__ == "__main__":
     # Start Flask app
