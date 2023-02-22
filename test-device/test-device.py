@@ -23,14 +23,18 @@ async def socket_connection():
         while True:
             # Receive data from server
             res = json.loads(await websocket.recv())
+            
+            print(res)
+            print(res['op'])
+            print(type(res))
 
             # If get settings request is received send settings to server  
             if res['op'] == 'get-settings':
                 await websocket.send(json.dumps(settings))
 
             if res['op'] == 'update-settings':
-                settings = res['settings']
-                print(settings)
+                # settings = res['settings']
+                print(res['settings'])
 
 # Start socket connection function
 asyncio.run(socket_connection())

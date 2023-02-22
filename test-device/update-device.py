@@ -8,7 +8,7 @@ url = f'https://{SERVER_ADDRESS}/update-device'
 data = {
   'clientID': 'CLIENT IDENTIFIER',
   'deviceID': 'DEVICE IDENTIFIER',
-  'data': {
+  'settings': {
     'op': 'update-settings',
     'settings': {
       'setting1': 'value1',

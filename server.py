@@ -28,6 +28,8 @@ async def update_client(deviceID: str, clientID: str, settings: str):
     if clientID not in devicePermissions[deviceID]:
         return 'no permission to update', 405
     
+    print(settings)
+
     # Send update data to device
     await socketConnection.send(deviceID, settings)
 
