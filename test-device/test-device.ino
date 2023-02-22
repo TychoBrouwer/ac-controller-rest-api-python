@@ -17,10 +17,16 @@ WebSocketClient webSocketClient;
 // WiFi client
 WiFiClient client;
 
-JsonObject& settings = jsonBuffer.parseObject("{\"deviceID\":\"DEVICE IDENTIFIER\",\"setting1\":\"value1\",\"setting2\":\"value2\"}");
+// Settings JSON object
+DynamicJsonDocument settingsJson(1024);
 
 void setup() {
   Serial.begin(115200);
+
+  // Default/current settings (safe in a file?)
+  String settings = "{\"deviceID\":\"DEVICE IDENTIFIER\",\"setting1\":\"value1\",\"setting2\":\"value2\"}";
+  // Parse settings into settings object
+  deserializeJson(settingsJson, settings);
   
   // Connect to WiFi network
   WiFi.begin(ssid, password);
@@ -60,21 +66,25 @@ void setup() {
     Serial.println(data);
 
     // Send device identifier to server
-    webSocketClient.sendData(settings['deviceID']);
+    webSocketClient.sendData((char*)settings['deviceID']);
   }
 }
  
 void loop() { 
   if (client.connected()) {
     // Receive data from server
-    String data = webSocketClient.getData(data);
-    Serial.println(data);
-    JsonObject& dataJson = jsonBuffer.parseObject(data);
+    String request;
+    webSocketClient.getData(request);
+    Serial.println(request);
+
+    // Parse data
+    DynamicJsonDocument requestJson(1024);
+    deserializeJson(requestJson, request);
 
     // If get settings request is received send settings to server  
-    if (dataJson['op'] == "get-settings") {
+    if (requestJson['op'] == "get-settings") {
         String settingsString;
-        settings.printTo(settingsString);
+        serializeJson(settingsJson, settingsString);
         webSocketClient.sendData(settingsString);
     }
   } else {
