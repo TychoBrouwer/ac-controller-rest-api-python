@@ -10,11 +10,11 @@ class SocketConnection:
 
     async def send(self, deviceID, data):
         # Send server connection conformation to device
-        await self.devices[deviceID].send_json(data)
+        await self.devices[deviceID].send_text(data)
 
     async def receive(self, deviceID):
         # Send server connection conformation to device
-        data = await self.devices[deviceID].receive_json()
+        data = await self.devices[deviceID].send_text()
 
         return data
 
