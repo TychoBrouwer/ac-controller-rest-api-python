@@ -15,9 +15,9 @@ def root():
     return 'server is running and reachable!'
 
 @app.get("/update-device")
-async def update_client(deviceID: str, clientID: str, settings):    
+async def update_client(deviceID: str, clientID: str, operation):    
     # Check if all arguments are supplied
-    if not (deviceID or clientID or settings):
+    if not (deviceID or clientID or operation):
         return 'not enough arguments supplied', 400
 
     # Check if device is connected
@@ -28,10 +28,10 @@ async def update_client(deviceID: str, clientID: str, settings):
     if clientID not in devicePermissions[deviceID]:
         return 'no permission to update', 405
     
-    print(settings)
+    print(operation)
 
     # Send update data to device
-    await socketConnection.send(deviceID, settings)
+    await socketConnection.send(deviceID, operation)
 
     # Return success code
     return '', 204
