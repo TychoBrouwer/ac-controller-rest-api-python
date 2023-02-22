@@ -15,7 +15,7 @@ def root():
     return 'server is running and reachable!'
 
 @app.get("/update-device")
-async def update_client(deviceID: str, clientID: str, settings: str):    
+async def update_client(deviceID: str, clientID: str, settings):    
     # Check if all arguments are supplied
     if not (deviceID or clientID or settings):
         return 'not enough arguments supplied', 400

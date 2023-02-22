@@ -22,11 +22,11 @@ async def socket_connection():
 
         while True:
             # Receive data from server
-            res = json.loads(await websocket.recv())
+            res = await websocket.recv()
             print(res)
 
             # If get settings request is received send settings to server  
-            if res.op == 'get-settings':
+            if res['op'] == 'get-settings':
                 await websocket.send(json.dumps(settings))
 
             if res.op == 'update-settings':

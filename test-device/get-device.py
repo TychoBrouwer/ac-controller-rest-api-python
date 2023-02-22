@@ -15,4 +15,4 @@ data = {
 x = requests.get(url, params = data)
 
 # Get returned data (current device settings)
-print(json.dumps(x))
+print(x)
