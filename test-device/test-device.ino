@@ -2,6 +2,8 @@
 #include <WiFi.h>
 // Library used for web socket connection (https://github.com/morrissinger/ESP8266-Websocket)
 #include "WebSocketClient.h"
+// Library used for JSON parsing
+#include <ArduinoJson.h>
 
 // Include constants
 #include "./constants.h"
@@ -14,6 +16,8 @@ const char* password = "PASSWORD";
 WebSocketClient webSocketClient;
 // WiFi client
 WiFiClient client;
+
+JsonObject& settings = jsonBuffer.parseObject("{\"deviceID\":\"DEVICE IDENTIFIER\",\"setting1\":\"value1\",\"setting2\":\"value2\"}");
 
 void setup() {
   Serial.begin(115200);
@@ -56,21 +60,22 @@ void setup() {
     Serial.println(data);
 
     // Send device identifier to server
-    webSocketClient.sendData("DEVICE IDENTIFIER");
+    webSocketClient.sendData(settings['deviceID']);
   }
 }
  
-void loop() {
-  String data;
- 
+void loop() { 
   if (client.connected()) {
     // Receive data from server
-    webSocketClient.getData(data);
+    String data = webSocketClient.getData(data);
     Serial.println(data);
+    JsonObject& dataJson = jsonBuffer.parseObject(data);
 
     // If get settings request is received send settings to server  
-    if (data == "get-settings") {
-        webSocketClient.sendData("DEVICE IDENTIFIER");
+    if (dataJson['op'] == "get-settings") {
+        String settingsString;
+        settings.printTo(settingsString);
+        webSocketClient.sendData(settingsString);
     }
   } else {
     Serial.println("Client disconnected.");
