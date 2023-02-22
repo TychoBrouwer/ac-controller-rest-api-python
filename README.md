@@ -1,4 +1,4 @@
-# Python rest API for the air conditioning controller
+# Python rest API and websocket for the air conditioning controller
 
 This is a project for the USE course Detailing, realization and RPC test - group 17. Instructions on how to use GitHub and the Flask server are below.
 
@@ -18,7 +18,7 @@ This is a project for the USE course Detailing, realization and RPC test - group
 7. Run ```cd path/project/directory``` in the terminal to navigate to your project folder.
 8. Run ```git clone https://github.com/TychoBrouwer/ac-controller-rest-api-python.git``` to clone the Git repository in the current directory.
 9. Run ```git branch -M main``` to set the Git branch.
-10. Run ```flask --app server run``` to start the Python server.
+10. Run ```uvicorn server:app --host 0.0.0.0 --port 5000``` to start the Python server.
 
 ### To pull updates from the origin repository
 
@@ -34,12 +34,12 @@ This is a project for the USE course Detailing, realization and RPC test - group
 
 ## Running the Flask Server
 
-Run the server with ```flask --app server run```
+Run the server with ```uvicorn server:app --host 0.0.0.0 --port 5000```
 
 Run the other scripts with ```python "SCRIPT_NAME"``` or ```python3 "SCRIPT_NAME"```
 
 ## Project
 
-This project aims to allow an IR controlled air conditioner to become a smart air conditioner. The user can control their AC unit remotely using an app. This is achieved by forwaring the request from the remote device to a local device, which uses an IR transmitter to control the AC unit. The server can also relay weather information to the local device for smart temperature control by the air conditioner.
+This project aims to allow an IR controlled air conditioner to become a smart air conditioner. The user can control their AC unit remotely using an app. This is achieved by forwarding the request from the remote device to a local device, which uses an IR transmitter to control the AC unit. The server can also relay weather information to the local device for smart temperature control by the air conditioner.
 
 This repository hosts the code for the server which acts as the bridge between the local device and the remote client.

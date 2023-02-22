@@ -94,3 +94,7 @@ devicePermissions = {
 
 # Start socket connection
 socketManager = SocketManager();
+
+# # Run uvicorn server
+if __name__ == "__main__":
+    uvicorn.run(app, host=SERVER_IP, port=SERVER_PORT)
