@@ -90,4 +90,4 @@ socketConnection = SocketConnection();
 
 # Run uvicorn server
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=SERVER_PORT)
+    uvicorn.run(app, host=SERVER_IP, port=SERVER_PORT)
