@@ -101,6 +101,6 @@ devicePermissions = {
 # Start socket connection
 socketConnection = SocketConnection();
 
-if __name__ == "__main__":
-    # Start Flask app
-    app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
+# if __name__ == "__main__":
+#     # Start Flask app
+#     app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
