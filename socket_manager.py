@@ -1,6 +1,6 @@
 import asyncio
 
-class SocketConnection:
+class SocketManager:
     def __init__(self):
         # Currently connected devices
         self.devices = {}

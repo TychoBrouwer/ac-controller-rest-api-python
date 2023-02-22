@@ -5,7 +5,7 @@ import json
 
 # Import files
 from constants import *
-from socket_connection import SocketConnection
+from socket_manager import SocketManager
 
 # Initialize fastapi app
 app = FastAPI()
@@ -15,23 +15,21 @@ def root():
     return { 'code': 200, 'res': 'server is running and reachable!' }
 
 @app.get("/update-device")
-async def update_client(deviceID: str, clientID: str, operation):    
+async def update_client(deviceID: str, clientID: str, operation: str):    
     # Check if all arguments are supplied
     if not (deviceID or clientID or operation):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not socketConnection.connected(deviceID):
+    if not SocketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
     if clientID not in devicePermissions[deviceID]:
         return { 'code': 405, 'res': 'no permission to update' }
     
-    print(operation)
-
     # Send update data to device
-    await socketConnection.send(deviceID, operation)
+    await SocketManager.send(deviceID, operation)
 
     # Return success code
     return { 'code': 200, 'res': 'successfully updated device' }
@@ -43,7 +41,7 @@ async def get_client(deviceID: str, clientID: str):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not socketConnection.connected(deviceID):
+    if not SocketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
@@ -55,10 +53,10 @@ async def get_client(deviceID: str, clientID: str):
     }
 
     # Send data request to the device 
-    await socketConnection.send(deviceID, json.dumps(data))
+    await SocketManager.send(deviceID, json.dumps(data))
 
     # Receive data from device
-    data = await socketConnection.receive(deviceID)
+    data = await SocketManager.receive(deviceID)
 
     # Return data to client
     return { 'code': 200, 'res': 'successfully returned device settings', 'settings': data }
@@ -70,7 +68,7 @@ async def add_client(deviceID: str, clientID: str):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not socketConnection.connected(deviceID):
+    if not SocketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
@@ -86,7 +84,7 @@ async def add_client(deviceID: str, clientID: str):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    await socketConnection.handler(websocket)
+    await SocketManager.handler(websocket)
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
@@ -94,7 +92,7 @@ devicePermissions = {
 }
 
 # Start socket connection
-socketConnection = SocketConnection();
+SocketManager = SocketManager();
 
 # Run uvicorn server
 if __name__ == "__main__":
