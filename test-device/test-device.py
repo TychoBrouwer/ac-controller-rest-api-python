@@ -3,11 +3,11 @@ import asyncio
 import websockets
 
 # Import constants files
-from constants import SERVER_SOCKET_ADDRESS
+from constants import SERVER_ADDRESS
 
 async def socket_connection():
     # Connect to websocket
-    async with websockets.connect(f'wss://{SERVER_SOCKET_ADDRESS}') as websocket:
+    async with websockets.connect(f'wss://{SERVER_ADDRESS}/ws') as websocket:
         # Receive server conformation
         res = await websocket.recv()
         print(res)

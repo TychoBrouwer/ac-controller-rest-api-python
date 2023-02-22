@@ -34,7 +34,7 @@ void setup() {
  
   delay(5000);
  
-  if (client.connect(SERVER_SOCKET_ADDRESS, 443)) {
+  if (client.connect('ws://' + SERVER_ADDRESS + '/ws', 443)) {
     Serial.println("Connected");
   } else {
     Serial.println("Connection failed.");
@@ -42,7 +42,7 @@ void setup() {
  
   // perform handshake with server
   // webSocketClient.path = '';
-  webSocketClient.host = SERVER_SOCKET_ADDRESS;
+  webSocketClient.host = 'ws://' + SERVER_ADDRESS + '/ws';
   if (webSocketClient.handshake(client)) {
     Serial.println("Handshake successful");
   } else {

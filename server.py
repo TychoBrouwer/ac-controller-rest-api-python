@@ -1,22 +1,15 @@
-from typing import Union
 from fastapi import FastAPI, WebSocket
+import uvicorn
 
 # Import files
 from constants import *
 from socket_connection import SocketConnection
 
-# Initialize flask server
-# app = Flask(__name__)
+# Initialize fastapi app
 app = FastAPI()
 
-# @app.route("/update-device", methods=['GET'])
 @app.get("/update-device")
 async def update_client(deviceID: str, clientID: str, data: str):
-    # # Get the request data
-    # deviceID = request.args.get('deviceID')
-    # clientID = request.args.get('clientID')
-    # data = request.args.get('data')
-
     # Check if all arguments are supplied
     if not (deviceID or clientID or data):
         return 'not enough arguments supplied', 400
@@ -36,12 +29,7 @@ async def update_client(deviceID: str, clientID: str, data: str):
     return '', 204
 
 @app.get("/get-device")
-# @app.route("/get-device", methods=['GET'])
 async def get_client(deviceID: str, clientID: str):
-    # # Get the request data
-    # deviceID = request.args.get('deviceID')
-    # clientID = request.args.get('clientID')
-
     # Check if all arguments are supplied
     if not (deviceID or clientID):
         return 'not enough arguments supplied', 400
@@ -63,13 +51,8 @@ async def get_client(deviceID: str, clientID: str):
     # Return data to client
     return data
 
-# @app.route("/add-client", methods=['GET'])
 @app.get("/add-client")
 async def add_client(deviceID: str, clientID: str):
-    # # Get the request data
-    # deviceID = request.args.get('deviceID')
-    # clientID = request.args.get('clientID')
-
     # Check if all arguments are supplied
     if not (deviceID or clientID):
         return 'not enough arguments supplied', 400
@@ -91,7 +74,7 @@ async def add_client(deviceID: str, clientID: str):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    await socketConnection.socket_handler(websocket)
+    await socketConnection.handler(websocket)
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
@@ -101,6 +84,6 @@ devicePermissions = {
 # Start socket connection
 socketConnection = SocketConnection();
 
-# if __name__ == "__main__":
-#     # Start Flask app
-#     app.run(host=SERVER_IP, port=SERVER_FLASK_PORT)
+# Run uvicorn server
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=SERVER_PORT)

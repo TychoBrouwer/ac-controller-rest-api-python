@@ -1,8 +1,8 @@
 import asyncio
 
-# Currently connected devices
 class SocketConnection:
     def __init__(self):
+        # Currently connected devices
         self.devices = {}
         
     def connected(self, deviceID):
@@ -14,11 +14,11 @@ class SocketConnection:
 
     async def receive(self, deviceID):
         # Send server connection conformation to device
-        data = await self.devices[deviceID].recv()
+        data = await self.devices[deviceID].receive_text()
 
         return data
 
-    async def socket_handler(self, websocket):
+    async def handler(self, websocket):
         # Send server connection conformation to device
         await websocket.send_text('Server is working!')
 
@@ -27,9 +27,8 @@ class SocketConnection:
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
-            print(f'new device connection: {websocket.client}, {deviceID}')
+            print(f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         # Keep websocket connection open
         while True:
             await asyncio.sleep(1)
-            
