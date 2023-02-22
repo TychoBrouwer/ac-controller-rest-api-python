@@ -61,7 +61,7 @@ async def get_client(deviceID: str, clientID: str):
     data = await socketConnection.receive(deviceID)
 
     # Return data to client
-    return { 'code': 200, 'res': 'successfully returned device', 'settings': data }
+    return { 'code': 200, 'res': 'successfully returned device settings', 'settings': data }
 
 @app.get("/add-client")
 async def add_client(deviceID: str, clientID: str):
