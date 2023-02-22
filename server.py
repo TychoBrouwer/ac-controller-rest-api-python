@@ -1,4 +1,3 @@
-from typing import Union
 from fastapi import FastAPI, WebSocket
 import uvicorn
 import json
@@ -9,6 +8,17 @@ from socket_manager import SocketManager
 
 # Initialize fastapi app
 app = FastAPI()
+
+# Permissions of the client identifiers and their devices
+devicePermissions = {
+    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
+}
+
+# Start socket connection
+socketManager = SocketManager();
+
+# Run uvicorn server
+uvicorn.run(app, host=SERVER_IP, port=SERVER_PORT)
 
 @app.get("/")
 def root():
@@ -21,7 +31,7 @@ async def update_client(deviceID: str, clientID: str, operation: str):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not SocketManager.connected(deviceID):
+    if not socketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
@@ -29,7 +39,7 @@ async def update_client(deviceID: str, clientID: str, operation: str):
         return { 'code': 405, 'res': 'no permission to update' }
     
     # Send update data to device
-    await SocketManager.send(deviceID, operation)
+    await socketManager.send(deviceID, operation)
 
     # Return success code
     return { 'code': 200, 'res': 'successfully updated device' }
@@ -41,7 +51,7 @@ async def get_client(deviceID: str, clientID: str):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not SocketManager.connected(deviceID):
+    if not socketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
@@ -53,10 +63,10 @@ async def get_client(deviceID: str, clientID: str):
     }
 
     # Send data request to the device 
-    await SocketManager.send(deviceID, json.dumps(data))
+    await socketManager.send(deviceID, json.dumps(data))
 
     # Receive data from device
-    data = await SocketManager.receive(deviceID)
+    data = await socketManager.receive(deviceID)
 
     # Return data to client
     return { 'code': 200, 'res': 'successfully returned device settings', 'settings': data }
@@ -68,7 +78,7 @@ async def add_client(deviceID: str, clientID: str):
         return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
-    if not SocketManager.connected(deviceID):
+    if not socketManager.connected(deviceID):
         return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
@@ -83,17 +93,7 @@ async def add_client(deviceID: str, clientID: str):
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    # Accept connection
     await websocket.accept()
-    await SocketManager.handler(websocket)
-
-# Permissions of the client identifiers and their devices
-devicePermissions = {
-    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
-}
-
-# Start socket connection
-SocketManager = SocketManager();
-
-# Run uvicorn server
-if __name__ == "__main__":
-    uvicorn.run(app, host=SERVER_IP, port=SERVER_PORT)
+    # Start handler for socket
+    await socketManager.handler(websocket)
