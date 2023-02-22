@@ -8,6 +8,10 @@ from socket_connection import SocketConnection
 # Initialize fastapi app
 app = FastAPI()
 
+@app.get("/")
+def root():
+    return 'server is running and reachable!'
+
 @app.get("/update-device")
 async def update_client(deviceID: str, clientID: str, data: str):
     # Check if all arguments are supplied
