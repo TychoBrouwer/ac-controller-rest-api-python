@@ -7,7 +7,7 @@ class SocketConnection:
     def __init__(self, port):
         self.devices = {}
         
-        start_new_thread(asyncio.run, (self.socket_connection(port),))
+        asyncio.run(self.socket_connection(port),)
 
     def connected(self, deviceID):
         return deviceID in self.devices
