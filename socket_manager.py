@@ -24,6 +24,7 @@ class SocketManager:
 
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
+
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket

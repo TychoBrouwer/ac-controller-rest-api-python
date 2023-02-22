@@ -1,21 +1,16 @@
 // Library used for wifi connection
 #include <WiFi.h>
-// Library used for web socket connection (https://github.com/morrissinger/ESP8266-Websocket)
-#include "WebSocketClient.h"
+// Library used for web socket connection (https://github.com/gilmaimon/ArduinoWebsockets)
+#include <ArduinoWebsockets.h>
 // Library used for JSON parsing
 #include <ArduinoJson.h>
 
 // Include constants
 #include "./constants.h"
 
-// WiFi credentials
-const char* ssid = "SSID";
-const char* password = "PASSWORD";
-
 // Web socket client
-WebSocketClient webSocketClient;
-// WiFi client
-WiFiClient client;
+using namespace websockets;
+WebsocketsClient client;
 
 // Settings JSON object
 DynamicJsonDocument settingsJson(1024);
@@ -29,7 +24,7 @@ void setup() {
   deserializeJson(settingsJson, settings);
   
   // Connect to WiFi network
-  WiFi.begin(ssid, password);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
  
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
@@ -37,59 +32,54 @@ void setup() {
     Serial.print(".");
   }
  
-  Serial.println("");
+  Serial.println();
   Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
  
-  delay(5000);
- 
-  if (client.connect('ws://' + SERVER_ADDRESS + '/ws', 443)) {
-    Serial.println("Connected");
-  } else {
-    Serial.println("Connection failed.");
-  }
- 
-  // perform handshake with server
-  // webSocketClient.path = '';
-  webSocketClient.host = 'ws://' + SERVER_ADDRESS + '/ws';
-  if (webSocketClient.handshake(client)) {
-    Serial.println("Handshake successful");
-  } else {
-    Serial.println("Handshake failed.");
-  }
+  delay(1000);
 
-  if (client.connected()) {
-    // Receive server conformation
-    String data;
-    webSocketClient.getData(data);
-    Serial.println(data);
+  // Before connecting, set the ssl fingerprint of the server
+  client.setCACert(sslCACert);
 
-    // Send device identifier to server
-    webSocketClient.sendData((char*)settings['deviceID']);
-  }
+  // Connect to server
+  client.connect(strcat(strcat("wss://", SERVER_ADDRESS), "/ws"));
+
+  // Receive server conformation
+  auto conf = client.readBlocking();
+  Serial.println(conf.data());
+  Serial.println(conf.c_str());
+
+  // Send a message
+  client.send(settingsJson["deviceID"].as<const char*>());
 }
  
-void loop() { 
-  if (client.connected()) {
-    // Receive data from server
-    String request;
-    webSocketClient.getData(request);
-    Serial.println(request);
+void loop() {
+  // Receive data from server
+  auto request = client.readBlocking();
+  Serial.println(request.data());
+  Serial.println(request.c_str());
 
-    // Parse data
-    DynamicJsonDocument requestJson(1024);
-    deserializeJson(requestJson, request);
+  // Parse request data
+  DynamicJsonDocument requestJson(1024);
+  deserializeJson(requestJson, request.data());
+  
+  if (requestJson['op'] == "get-settings") {
+    // Serialize current settings to string
+    String settingsString;
+    serializeJson(settingsJson, settingsString);
 
-    // If get settings request is received send settings to server  
-    if (requestJson['op'] == "get-settings") {
-        String settingsString;
-        serializeJson(settingsJson, settingsString);
-        webSocketClient.sendData(settingsString);
-    }
-  } else {
-    Serial.println("Client disconnected.");
+    // Send settings to server
+    client.send(settingsString);
+  } else if (requestJson['op'] == "update-settings") {
+      // Update settings
+      JsonVariant settingsToUpdate = requestJson['settings'];
+
+      // Iterate through settings to update
+      for (JsonPair pair : settingsToUpdate.as<JsonObject>()) {
+        settingsJson[pair.key().c_str()] = pair.value();
+      }
   }
- 
-  delay(500);
+
+  delay(100);
 }

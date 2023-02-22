@@ -26,9 +26,13 @@ async def update_client(deviceID: str, clientID: str, operation: str):
     # Check if client has permission
     if clientID not in devicePermissions[deviceID]:
         return { 'code': 405, 'res': 'no permission to update' }
-    
-    # Send update data to device
-    await socketManager.send(deviceID, operation)
+
+    try:
+        # Send update data to device
+        await socketManager.send(deviceID, operation)
+    except:
+        # Return error code
+        return { 'code': 500, 'res': 'error while sending data to device' }
 
     # Return success code
     return { 'code': 200, 'res': 'successfully updated device' }
@@ -51,11 +55,15 @@ async def get_client(deviceID: str, clientID: str):
         'op': 'get-settings'
     }
 
-    # Send data request to the device 
-    await socketManager.send(deviceID, json.dumps(data))
+    try:
+        # Send data request to the device 
+        await socketManager.send(deviceID, json.dumps(data))
 
-    # Receive data from device
-    data = await socketManager.receive(deviceID)
+        # Receive data from device
+        data = await socketManager.receive(deviceID)
+    except:
+        # Return error code
+        return { 'code': 500, 'res': 'error while sending data to device' }
 
     # Return data to client
     return { 'code': 200, 'res': 'successfully returned device settings', 'settings': data }
