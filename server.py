@@ -12,21 +12,21 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return 'server is running and reachable!'
+    return { 'code': 200, 'res': 'server is running and reachable!' }
 
 @app.get("/update-device")
 async def update_client(deviceID: str, clientID: str, operation):    
     # Check if all arguments are supplied
     if not (deviceID or clientID or operation):
-        return 'not enough arguments supplied', 400
+        return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
     if not socketConnection.connected(deviceID):
-        return 'device could not be found', 400
+        return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
     if clientID not in devicePermissions[deviceID]:
-        return 'no permission to update', 405
+        return { 'code': 405, 'res': 'no permission to update' }
     
     print(operation)
 
@@ -34,21 +34,21 @@ async def update_client(deviceID: str, clientID: str, operation):
     await socketConnection.send(deviceID, operation)
 
     # Return success code
-    return '', 204
+    return { 'code': 200, 'res': 'successfully updated device' }
 
 @app.get("/get-device")
 async def get_client(deviceID: str, clientID: str):
     # Check if all arguments are supplied
     if not (deviceID or clientID):
-        return 'not enough arguments supplied', 400
+        return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
     if not socketConnection.connected(deviceID):
-        return 'device could not be found', 400
+        return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
     if clientID not in devicePermissions[deviceID]:
-        return 'no permission to update', 405
+        return { 'code': 405, 'res': 'no permission to update' }
 
     data = {
         'op': 'get-settings'
@@ -61,27 +61,27 @@ async def get_client(deviceID: str, clientID: str):
     data = await socketConnection.receive(deviceID)
 
     # Return data to client
-    return data
+    return { 'code': 200, 'res': 'successfully returned device', 'settings': data }
 
 @app.get("/add-client")
 async def add_client(deviceID: str, clientID: str):
     # Check if all arguments are supplied
     if not (deviceID or clientID):
-        return 'not enough arguments supplied', 400
+        return { 'code': 400, 'res': 'not enough arguments supplied' }
 
     # Check if device is connected
     if not socketConnection.connected(deviceID):
-        return 'device could not be found', 400
+        return { 'code': 400, 'res': 'device could not be found' }
 
     # Check if client has permission
     if clientID not in devicePermissions[deviceID]:
-        return 'no permission to update', 405
+        return { 'code': 405, 'res': 'no permission to update' }
 
     # Add clientID to the permissions for deviceID
     devicePermissions[deviceID].append(clientID)
 
     # Return success code
-    return '', 204
+    return { 'code': 200, 'res': 'successfully added client to device' }
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

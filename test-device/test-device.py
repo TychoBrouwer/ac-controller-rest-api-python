@@ -24,10 +24,6 @@ async def socket_connection():
             # Receive operation from server
             operation = json.loads(await websocket.recv())
             
-            print(operation)
-            print(operation['op'])
-            print(type(operation))
-
             # If get settings request is received send settings to server  
             if operation['op'] == 'get-settings':
                 await websocket.send(json.dumps(settings))
