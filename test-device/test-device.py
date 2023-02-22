@@ -30,7 +30,7 @@ async def socket_connection():
                 await websocket.send(json.dumps(settings))
 
             if res.op == 'update-settings':
-                settings = res.settings
+                # settings = res.settings
 
                 print(res.settings)
 

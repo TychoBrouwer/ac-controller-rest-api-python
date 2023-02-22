@@ -53,7 +53,7 @@ async def get_client(deviceID: str, clientID: str):
     }
 
     # Send data request to the device 
-    await socketConnection.send(deviceID, data)
+    await socketConnection.send(deviceID, json.dumps(data))
 
     # Receive data from device
     data = await socketConnection.receive(deviceID)
