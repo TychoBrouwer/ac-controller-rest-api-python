@@ -14,7 +14,7 @@ class SocketConnection:
 
     async def receive(self, deviceID):
         # Send server connection conformation to device
-        data = await self.devices[deviceID].send_text()
+        data = await self.devices[deviceID].receive_text()
 
         return data
 
