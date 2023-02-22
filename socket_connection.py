@@ -27,7 +27,7 @@ class SocketConnection:
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
-            print(f'new device connection: {websocket.url}, {deviceID}')
+            print(f'new device connection: {websocket.client}, {deviceID}')
 
         # Keep websocket connection open
         while True:
