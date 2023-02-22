@@ -20,7 +20,7 @@ class SocketConnection:
 
     async def socket_handler(self, websocket):
         # Send server connection conformation to device
-        await websocket.send(str.encode('Server is working!'))
+        await websocket.send('Server is working!')
 
         # Receive device identifier from device
         deviceID = (await websocket.recv()).decode("utf-8")
