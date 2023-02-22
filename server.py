@@ -9,17 +9,6 @@ from socket_manager import SocketManager
 # Initialize fastapi app
 app = FastAPI()
 
-# Permissions of the client identifiers and their devices
-devicePermissions = {
-    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
-}
-
-# Start socket connection
-socketManager = SocketManager();
-
-# Run uvicorn server
-uvicorn.run(app, host='0.0.0.0', port=SERVER_PORT)
-
 @app.get("/")
 def root():
     return { 'code': 200, 'res': 'server is running and reachable!' }
@@ -95,5 +84,13 @@ async def add_client(deviceID: str, clientID: str):
 async def websocket_endpoint(websocket: WebSocket):
     # Accept connection
     await websocket.accept()
-    # Start handler for socket
+    # Start handler for the socket 
     await socketManager.handler(websocket)
+
+# Permissions of the client identifiers and their devices
+devicePermissions = {
+    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
+}
+
+# Start socket connection
+socketManager = SocketManager();
