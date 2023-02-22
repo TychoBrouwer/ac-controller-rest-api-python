@@ -13,7 +13,7 @@ async def socket_connection():
         print(res)
 
         # Send device identifier to server
-        await websocket.send(str.encode('DEVICE IDENTIFIER'))
+        await websocket.send('DEVICE IDENTIFIER')
 
         while True:
             # Receive data from server
