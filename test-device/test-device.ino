@@ -15,6 +15,12 @@ WebsocketsClient client;
 // Settings JSON object
 DynamicJsonDocument settingsJson(1024);
 
+// WiFi credentials
+char* WIFI_SSID = "SSID";
+char* WIFI_PASSWORD = "PASSWORD";
+
+const char* SERVER_ADDRESS = "wss://accontroller.tbrouwer.com:443/ws";
+
 void setup() {
   Serial.begin(115200);
 
@@ -39,21 +45,16 @@ void setup() {
  
   delay(1000);
 
-  // Before connecting, set the ssl fingerprint of the server
-  client.setCACert(sslCACert);
-
   // Connect to server
-  client.connect(strcat(strcat("wss://", SERVER_ADDRESS), "/ws"));
+  client.connect(SERVER_ADDRESS);
 
   // Receive server conformation
   auto conf = client.readBlocking();
-  Serial.println(conf.data());
-  Serial.println(conf.c_str());
 
   // Send a message
   client.send(settingsJson["deviceID"].as<const char*>());
 }
- 
+
 void loop() {
   // Receive data from server
   auto request = client.readBlocking();
