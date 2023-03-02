@@ -100,7 +100,24 @@ async def websocket_endpoint(websocket: WebSocket):
     # Accept connection
     await websocket.accept()
     # Start handler for the socket
-    await socketManager.handler(websocket)
+    # await socketManager.handler(websocket)
+    # Send server connection conformation to device
+    await websocket.send_text('Server is working!')
+
+    print('testsettdawdadadadaset')
+
+    # Receive device identifier from device
+    deviceID = await websocket.receive_text()
+
+    print('testsettset')
+
+    if deviceID:
+        # Store device identifier in currently connected dict
+        socketManager.handler(websocket, deviceID)
+        # self.devices[deviceID] = websocket
+        print(
+            f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
