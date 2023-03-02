@@ -11,7 +11,7 @@ class SocketManager:
 
     async def send(self, deviceID, data):
         # Send server connection conformation to device
-        await self.devices[deviceID].send_text(data)
+        self.devices[deviceID].send_text(data)
 
     async def receive(self, deviceID):
         # Send server connection conformation to device
@@ -21,7 +21,7 @@ class SocketManager:
 
     async def handler(self, websocket):
         # Send server connection conformation to device
-        await websocket.send_text('Server is working!')
+        websocket.send_text('Server is working!')
 
         print('testsettdawdadadadaset')
 

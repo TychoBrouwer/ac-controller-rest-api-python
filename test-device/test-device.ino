@@ -47,9 +47,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     if (strcmp((char *)payload, "Server is working!") == 0)
     {
       // Send device ID to server
-      // webSocket.sendTXT(settingsJson["deviceID"].as<const char*>());
-      Serial.println(settingsJson["deviceID"].as<const char *>());
-      webSocket.sendTXT("DEVICE IDENTIFIER");
+      webSocket.sendTXT(settingsJson["deviceID"].as<const char *>());
 
       // Break early
       break;
