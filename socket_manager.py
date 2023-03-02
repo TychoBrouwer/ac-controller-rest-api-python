@@ -32,9 +32,9 @@ class SocketManager:
             print(
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
-            while True:
-                try:
-                    continue
-                except Exception as e:
-                    print(e)
-                    break
+        while True:
+            try:
+                continue
+            except Exception as e:
+                print(e)
+                break
