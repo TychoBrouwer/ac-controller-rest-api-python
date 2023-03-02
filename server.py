@@ -99,6 +99,7 @@ async def add_client(deviceID: str, clientID: str):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     # Accept connection
+    print('dadada')
     await websocket.accept()
     # Start handler for the socket
     # await socketManager.handler(websocket)
