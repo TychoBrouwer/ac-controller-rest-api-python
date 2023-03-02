@@ -31,3 +31,10 @@ class SocketManager:
             self.devices[deviceID] = websocket
             print(
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+
+            while True:
+                try:
+                    continue
+                except Exception as e:
+                    print(e)
+                    break
