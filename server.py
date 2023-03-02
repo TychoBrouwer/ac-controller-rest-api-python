@@ -119,8 +119,11 @@ async def websocket_endpoint(websocket: WebSocket):
         print(
             f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
-        while True:
-            await asyncio.sleep(1)
+        try:
+            while True:
+                await asyncio.sleep(1)
+        except KeyboardInterrupt:
+            print('interrupted!')
 
 
 # Permissions of the client identifiers and their devices
