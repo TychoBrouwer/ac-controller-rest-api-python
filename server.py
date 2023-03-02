@@ -103,6 +103,13 @@ async def websocket_endpoint(websocket: WebSocket):
     # Start handler for the socket
     await socketManager.handler(websocket)
 
+    while True:
+        try:
+            continue
+        except Exception as e:
+            print(e)
+            break
+
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
