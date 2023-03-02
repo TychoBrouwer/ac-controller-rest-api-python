@@ -19,7 +19,7 @@ class SocketManager:
 
         return data
 
-    def add(self, deviceID, websocket):
+    async def add(self, deviceID, websocket):
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
