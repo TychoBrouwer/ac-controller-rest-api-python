@@ -109,9 +109,9 @@ async def websocket_endpoint(websocket: WebSocket):
 
     print('testsettdawdadadadaset')
 
-    # # Receive device identifier from device
-    # deviceID = await websocket.receive_text()
-    # print('1testsettset')
+    # Receive device identifier from device
+    deviceID = await websocket.receive_text()
+    print('1testsettset')
 
     # if deviceID:
     #     print('2testsettset')
@@ -124,11 +124,11 @@ async def websocket_endpoint(websocket: WebSocket):
     #     print(
     #         f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
-    #     try:
-    #         while True:
-    #             await asyncio.sleep(1)
-    #     except KeyboardInterrupt:
-    #         print('interrupted!')
+    # try:
+    #     while True:
+    #         await asyncio.sleep(1)
+    # except KeyboardInterrupt:
+    #     print('interrupted!')
 
 
 # Permissions of the client identifiers and their devices

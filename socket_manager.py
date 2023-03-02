@@ -19,24 +19,24 @@ class SocketManager:
 
         return data
 
-    def handler(self, websocket, deviceID):
+    async def handler(self, websocket, deviceID):
         self.devices[deviceID] = websocket
         # Send server connection conformation to device
-        # await websocket.send_text('Server is working!')
+        await websocket.send_text('Server is working!')
 
-        # print('testsettdawdadadadaset')
+        print('testsettdawdadadadaset')
 
-        # # Receive device identifier from device
-        # deviceID = await websocket.receive_text()
+        # Receive device identifier from device
+        deviceID = await websocket.receive_text()
 
-        # print('testsettset')
+        print('testsettset')
 
-        # if deviceID:
-        #     # Store device identifier in currently connected dict
-        #     self.devices[deviceID] = websocket
-        #     print(
-        #         f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+        if deviceID:
+            # Store device identifier in currently connected dict
+            self.devices[deviceID] = websocket
+            print(
+                f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         # Keep websocket connection open
-        # while True:
-        #     await asyncio.sleep(1)
+        while True:
+            await asyncio.sleep(1)
