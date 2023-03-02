@@ -31,8 +31,3 @@ class SocketManager:
             self.devices[deviceID] = websocket
             print(
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
-
-            # Keep websocket connection open
-            while True:
-                print('test')
-                await asyncio.sleep(1)
