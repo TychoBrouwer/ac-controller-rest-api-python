@@ -33,10 +33,10 @@ class SocketManager:
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
 
-        asyncio.create_task(self.add(deviceID, websocket))
-
         try:
             while True:
+                if deviceID:
+                    asyncio.create_task(self.add(deviceID, websocket))
                 await asyncio.sleep(1)
         except websocket:
             # Remove device from currently connected dict
