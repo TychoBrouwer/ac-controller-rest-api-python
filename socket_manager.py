@@ -38,7 +38,7 @@ class SocketManager:
                 if deviceID:
                     asyncio.create_task(self.add(deviceID, websocket))
                 await asyncio.sleep(1)
-        except websocket:
+        except websocket.WebSocketDisconnect:
             # Remove device from currently connected dict
             del self.devices[deviceID]
             print(
