@@ -4,7 +4,6 @@ import json
 import asyncio
 
 # Import files
-from constants import *
 from socket_manager import SocketManager
 
 # Initialize fastapi app
