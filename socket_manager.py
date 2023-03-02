@@ -34,7 +34,7 @@ class SocketManager:
 
         while True:
             try:
-                continue
+                asyncio.sleep(1)
             except Exception as e:
                 print(e)
                 break

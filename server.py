@@ -101,7 +101,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # Accept connection
     await websocket.accept()
     # Start handler for the socket
-    asyncio.create_task(socketManager.handler(websocket))
+    await socketManager.handler(websocket)
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
