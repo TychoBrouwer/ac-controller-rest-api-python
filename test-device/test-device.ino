@@ -27,34 +27,26 @@ const int Green_LED_pin = 33;
 // WebsocketsClient client;
 WebSocketsClient webSocket;
 
-bool socketStatus = true;
+bool socketStatus = false;
 
 // Settings JSON object
 DynamicJsonDocument settingsJson(1024);
-
-void setSocketBool(bool state) {
-  Serial.println(state);
-
-  socketStatus = state;
-}
 
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
   switch (type)
   {
   case WStype_DISCONNECTED:
-    Serial.println(socketStatus);
-    
     if (socketStatus == true) {
       Serial.println("[WSc] Disconnected!");
     }
-    setSocketBool(false);
+    socketStatus = false;
 
     break;
   case WStype_CONNECTED:
     Serial.println("[WSc] Connected to websocket");
 
-    setSocketBool(true);
+    socketStatus = true;
     break;
   case WStype_TEXT:
   {

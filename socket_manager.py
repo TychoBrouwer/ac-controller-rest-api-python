@@ -32,7 +32,8 @@ class SocketManager:
 
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
-        self.add(deviceID, websocket)
+
+        asyncio.create_task(self.add(deviceID, websocket))
 
         try:
             while True:
