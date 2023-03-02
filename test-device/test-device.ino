@@ -1,8 +1,8 @@
-#include <WiFi.h>        // Library used for wifi connection
-#include <ArduinoJson.h> // Library used for JSON parsing
-#include <WebSocketsClient.h>
+#include <WiFi.h>             // Library used for wifi connection
+#include <ArduinoJson.h>      // Library used for JSON parsing
+#include <WebSocketsClient.h> // Library used for websocket: https://github.com/Links2004/arduinoWebSockets
 
-#include <Arduino.h>
+// #include <Arduino.h>
 // #include <IRremoteESP8266.h> // Library used for IR transmission
 // #include <IRsend.h> // Library used for IR transmission
 
@@ -82,17 +82,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 
     break;
   }
-  case WStype_BIN:
-    break;
-  case WStype_ERROR:
-    break;
-  case WStype_FRAGMENT_TEXT_START:
-    break;
-  case WStype_FRAGMENT_BIN_START:
-    break;
-  case WStype_FRAGMENT:
-    break;
-  case WStype_FRAGMENT_FIN:
+  default:
     break;
   }
 }

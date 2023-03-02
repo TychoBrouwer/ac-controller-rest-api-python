@@ -1,10 +1,11 @@
 import asyncio
 
+
 class SocketManager:
     def __init__(self):
         # Currently connected devices
         self.devices = {}
-        
+
     def connected(self, deviceID):
         return deviceID in self.devices
 
@@ -22,13 +23,18 @@ class SocketManager:
         # Send server connection conformation to device
         await websocket.send_text('Server is working!')
 
+        print('testsettdawdadadadaset')
+
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
+
+        print('testsettset')
 
         if deviceID:
             # Store device identifier in currently connected dict
             self.devices[deviceID] = websocket
-            print(f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+            print(
+                f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         # Keep websocket connection open
         while True:
