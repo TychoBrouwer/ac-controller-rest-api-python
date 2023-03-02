@@ -24,13 +24,14 @@ class SocketManager:
         # await websocket.send_text('Server is working!')
 
         # Receive device identifier from device
-        deviceID = await websocket.receive_text()
+        print(await websocket.receive_text())
+        # deviceID = await websocket.receive_text()
 
-        if deviceID:
-            # Store device identifier in currently connected dict
-            self.devices[deviceID] = websocket
-            print(
-                f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+        # if deviceID:
+        #     # Store device identifier in currently connected dict
+        #     self.devices[deviceID] = websocket
+        #     print(
+        #         f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         while True:
             await asyncio.sleep(1)
