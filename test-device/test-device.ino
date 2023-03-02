@@ -1,16 +1,14 @@
-#define DEBUG
-
-#include <WiFi.h> // Library used for wifi connection
-#include <ArduinoJson.h> // Library used for JSON parsing 
+#include <WiFi.h>        // Library used for wifi connection
+#include <ArduinoJson.h> // Library used for JSON parsing
 #include <WebSocketsClient.h>
 
-#include <Arduino.h> 
+#include <Arduino.h>
 // #include <IRremoteESP8266.h> // Library used for IR transmission
 // #include <IRsend.h> // Library used for IR transmission
 
 // WiFi credentials
-char* WIFI_SSID = "FRITZ!Box 7560 BH";
-char* WIFI_PASSWORD = "72117123858228781469";
+char *WIFI_SSID = "FRITZ!Box 7560 BH";
+char *WIFI_PASSWORD = "72117123858228781469";
 
 // // IR LED pin
 // const uint16_t kIrLed = 2;
@@ -32,63 +30,70 @@ WebSocketsClient webSocket;
 // Settings JSON object
 DynamicJsonDocument settingsJson(1024);
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-  switch(type) {
-    case WStype_DISCONNECTED:
-      Serial.println("[WSc] Disconnected!");
+void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
+{
+  switch (type)
+  {
+  case WStype_DISCONNECTED:
+    Serial.println("[WSc] Disconnected!");
+    break;
+  case WStype_CONNECTED:
+    Serial.println("[WSc] Connected to websocket");
+    break;
+  case WStype_TEXT:
+  {
+    Serial.printf("[WSc] %s\n", payload);
+
+    if (strcmp((char *)payload, "Server is working!") == 0)
+    {
+      // Send device ID to server
+      // webSocket.sendTXT(settingsJson["deviceID"].as<const char*>());
+      Serial.println(settingsJson["deviceID"].as<const char *>());
+      webSocket.sendTXT("DEVICE IDENTIFIER");
+
+      // Break early
       break;
-    case WStype_CONNECTED:
-      Serial.println("[WSc] Connected to websocket");
-      break;
-    case WStype_TEXT:
+    }
+
+    // Parse request data
+    DynamicJsonDocument requestJson(1024);
+    deserializeJson(requestJson, (char *)payload);
+
+    if (requestJson["op"] == "get-settings")
+    {
+      // Serialize current settings to string
+      String settingsString;
+      serializeJson(settingsJson, settingsString);
+
+      // Send settings to server
+      webSocket.sendTXT(settingsString);
+    }
+    else if (requestJson["op"] == "update-settings")
+    {
+      // Update settings
+      JsonVariant settingsToUpdate = requestJson["settings"];
+
+      // Iterate through settings to update
+      for (JsonPair pair : settingsToUpdate.as<JsonObject>())
       {
-        Serial.printf("[WSc] %s\n", payload);
-        
-        if (strcmp((char *)payload, "Server is working!") == 0) {
-          // Send device ID to server
-          // webSocket.sendTXT(settingsJson["deviceID"].as<const char>());
-          Serial.println(settingsJson["deviceID"].as<String>());
-          webSocket.sendTXT("DEVICE IDENTIFIER");
-
-          // Break early
-          break;
-        }
-
-        // Parse request data
-        DynamicJsonDocument requestJson(1024);
-        deserializeJson(requestJson, (char *)payload);
-        
-        if (requestJson["op"] == "get-settings") {
-          // Serialize current settings to string
-          String settingsString;
-          serializeJson(settingsJson, settingsString);
-
-          // Send settings to server
-          webSocket.sendTXT(settingsString);
-        } else if (requestJson["op"] == "update-settings") {
-            // Update settings
-            JsonVariant settingsToUpdate = requestJson["settings"];
-
-            // Iterate through settings to update
-            for (JsonPair pair : settingsToUpdate.as<JsonObject>()) {
-              settingsJson[pair.key()] = pair.value();
-            }
-        }
-
-        break;
+        settingsJson[pair.key()] = pair.value();
       }
-    case WStype_BIN:
-      break;
-    case WStype_ERROR:
-      break;
-    case WStype_FRAGMENT_TEXT_START:
-      break;
-    case WStype_FRAGMENT_BIN_START:
-      break;
-    case WStype_FRAGMENT:
-      break;
-    case WStype_FRAGMENT_FIN:
-      break;
+    }
+
+    break;
+  }
+  case WStype_BIN:
+    break;
+  case WStype_ERROR:
+    break;
+  case WStype_FRAGMENT_TEXT_START:
+    break;
+  case WStype_FRAGMENT_BIN_START:
+    break;
+  case WStype_FRAGMENT:
+    break;
+  case WStype_FRAGMENT_FIN:
+    break;
   }
 }
 
@@ -108,7 +113,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 //   digitalWrite(Red_LED_pin, LOW);
 // }
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.setDebugOutput(true);
 
@@ -116,12 +122,13 @@ void setup() {
   String settings = "{\"deviceID\":\"DEVICE IDENTIFIER\",\"setting1\":\"value1\",\"setting2\":\"value2\"}";
   // Parse settings into settings object
   deserializeJson(settingsJson, settings);
-  
+
   // Connect to WiFi network
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
- 
+
   // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
     Serial.print(".");
   }
@@ -135,7 +142,8 @@ void setup() {
   webSocket.onEvent(webSocketEvent);
 }
 
-void loop() {
+void loop()
+{
   // Check for new messages
   webSocket.loop();
 }

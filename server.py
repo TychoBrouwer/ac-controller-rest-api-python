@@ -32,7 +32,8 @@ async def update_client(deviceID: str, clientID: str, operation: str):
     try:
         # Send update data to device
         await socketManager.send(deviceID, operation)
-    except:
+    except Exception as e:
+        print(e)
         # Return error code
         return {'code': 500, 'res': 'error while sending data to device'}
 
@@ -64,7 +65,8 @@ async def get_client(deviceID: str, clientID: str):
 
         # Receive data from device
         data = await socketManager.receive(deviceID)
-    except:
+    except Exception as e:
+        print(e)
         # Return error code
         return {'code': 500, 'res': 'error while sending data to device'}
 
