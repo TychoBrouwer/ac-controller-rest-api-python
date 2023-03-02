@@ -32,6 +32,10 @@ bool socketStatus = true;
 // Settings JSON object
 DynamicJsonDocument settingsJson(1024);
 
+void setSocketBool(bool state) {
+  socketStatus = state;
+}
+
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
   switch (type)
@@ -40,14 +44,14 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     if (socketStatus = true) {
       Serial.println("[WSc] Disconnected!");
     }
-    socketStatus = false;
+    setSocketBool(false);
 
     break;
   case WStype_CONNECTED:
-    socketStatus = true;
     Serial.println("[WSc] Connected to websocket");
-    
     webSocket.sendTXT(settingsJson["deviceID"].as<const char *>());
+
+    setSocketBool(true);
     break;
   case WStype_TEXT:
   {
