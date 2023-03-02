@@ -20,8 +20,8 @@ class SocketManager:
         return data
 
     async def handler(self, websocket):
-        # Send server connection conformation to device
-        await websocket.send_text('Server is working!')
+        # # Send server connection conformation to device
+        # await websocket.send_text('Server is working!')
 
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
@@ -33,4 +33,4 @@ class SocketManager:
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         while True:
-            await asyncio.sleep()
+            await asyncio.sleep(1)

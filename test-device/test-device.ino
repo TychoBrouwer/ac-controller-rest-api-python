@@ -39,19 +39,21 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     break;
   case WStype_CONNECTED:
     Serial.println("[WSc] Connected to websocket");
+
+    webSocket.sendTXT(settingsJson["deviceID"].as<const char *>());
     break;
   case WStype_TEXT:
   {
     Serial.printf("[WSc] %s\n", payload);
 
-    if (strcmp((char *)payload, "Server is working!") == 0)
-    {
-      // Send device ID to server
-      webSocket.sendTXT(settingsJson["deviceID"].as<const char *>());
+    // if (strcmp((char *)payload, "Server is working!") == 0)
+    // {
+    //   // Send device ID to server
+    //   webSocket.sendTXT(settingsJson["deviceID"].as<const char *>());
 
-      // Break early
-      break;
-    }
+    //   // Break early
+    //   break;
+    // }
 
     // Parse request data
     DynamicJsonDocument requestJson(1024);
