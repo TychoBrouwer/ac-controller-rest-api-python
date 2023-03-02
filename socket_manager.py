@@ -33,4 +33,4 @@ class SocketManager:
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep()
