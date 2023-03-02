@@ -19,8 +19,7 @@ class SocketManager:
 
         return data
 
-    async def handler(self, websocket, deviceID):
-        self.devices[deviceID] = websocket
+    async def handler(self, websocket):
         # Send server connection conformation to device
         await websocket.send_text('Server is working!')
 
