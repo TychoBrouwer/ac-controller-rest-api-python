@@ -1,6 +1,7 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
 import json
+import asyncio
 
 # Import files
 from constants import *
@@ -117,6 +118,9 @@ async def websocket_endpoint(websocket: WebSocket):
         # self.devices[deviceID] = websocket
         print(
             f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
+
+        while True:
+            await asyncio.sleep(1)
 
 
 # Permissions of the client identifiers and their devices
