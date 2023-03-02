@@ -103,19 +103,24 @@ async def websocket_endpoint(websocket: WebSocket):
     # Start handler for the socket
     # await socketManager.handler(websocket)
     # Send server connection conformation to device
+    print('da')
+
     await websocket.send_text('Server is working!')
 
     print('testsettdawdadadadaset')
 
     # Receive device identifier from device
     deviceID = await websocket.receive_text()
-
-    print('testsettset')
+    print('1testsettset')
 
     if deviceID:
+        print('2testsettset')
+
         # Store device identifier in currently connected dict
         socketManager.handler(websocket, deviceID)
         # self.devices[deviceID] = websocket
+        print('testsettset')
+
         print(
             f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
