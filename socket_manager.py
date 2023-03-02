@@ -24,12 +24,8 @@ class SocketManager:
         # Send server connection conformation to device
         await websocket.send_text('Server is working!')
 
-        print('testsettdawdadadadaset')
-
         # Receive device identifier from device
         deviceID = await websocket.receive_text()
-
-        print('testsettset')
 
         if deviceID:
             # Store device identifier in currently connected dict

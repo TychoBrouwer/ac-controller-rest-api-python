@@ -99,37 +99,9 @@ async def add_client(deviceID: str, clientID: str):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     # Accept connection
-    await print('dadada')
     await websocket.accept()
     # Start handler for the socket
-    # await socketManager.handler(websocket)
-    # Send server connection conformation to device
-    print('da')
-
-    await websocket.send_text('Server is working!')
-
-    print('testsettdawdadadadaset')
-
-    # Receive device identifier from device
-    deviceID = await websocket.receive_text()
-    print('1testsettset')
-
-    # if deviceID:
-    #     print('2testsettset')
-
-    #     # Store device identifier in currently connected dict
-    #     socketManager.handler(websocket, deviceID)
-    #     # self.devices[deviceID] = websocket
-    #     print('testsettset')
-
-    #     print(
-    #         f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
-
-    # try:
-    #     while True:
-    #         await asyncio.sleep(1)
-    # except KeyboardInterrupt:
-    #     print('interrupted!')
+    await socketManager.handler(websocket)
 
 
 # Permissions of the client identifiers and their devices
