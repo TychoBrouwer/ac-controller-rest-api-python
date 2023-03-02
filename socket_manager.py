@@ -34,4 +34,5 @@ class SocketManager:
 
         # Keep websocket connection open
         while True:
+            print('test')
             await asyncio.sleep(1)
