@@ -33,8 +33,4 @@ class SocketManager:
                 f'new device connection: {websocket.client.host}:{websocket.client.port}, {deviceID}')
 
         while True:
-            try:
-                await asyncio.sleep(1)
-            except Exception as e:
-                print(e)
-                break
+            await asyncio.sleep(1)
