@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 import uvicorn
 import json
 import asyncio
+import httpx
 
 # Import files
 from constants import *
@@ -107,6 +108,46 @@ async def websocket_endpoint(websocket: WebSocket):
 devicePermissions = {
     'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
 }
+
+@app.get("/get-weather-data")
+async def get_weather_data():
+    client = httpx.AsyncClient()
+    task = api_request(client)
+    result = await task
+    result = json.loads(result)
+
+    '''Forecasts are formatted as follows:
+    [
+    ['CITY_NAME (String)', 
+    SUNRISE_TIME (Unix, current timezone), 
+    SUNSET_TIME (Unix, current timezone)
+    ]
+
+    ['TIMESTAMP (String) (YYYY-MM-DD HH:MM:SS)', 
+    TEMPERATURE (Celcius), 
+    CLOUD_COVERAGE (%), 
+    ],
+    'next observation'
+    ]
+    '''
+    forecast_list = []
+
+    #add location, sunrise and sunset data
+    timezone = result['city']['timezone']
+    forecast_list.append([result['city']['name'], result['city']['sunrise'] + timezone, result['city']['sunset'] + timezone])
+
+    for i in result['list']:
+        forecast = []
+        forecast.append(i['dt_txt'])
+        forecast.append(i['main']['temp']-272.15) #convert to celsius
+        forecast.append(i['clouds']['all'])
+        forecast_list.append(forecast)
+    print(forecast_list)
+    return {"message": "Weather data received successfully"}
+
+async def api_request(client):
+    response = await client.get("http://api.openweathermap.org/data/2.5/forecast?q=" + LOCATION + "&cnt="+ OBSERVATION_COUNT + "&APPID=" + OPENWEATHERMAP_API_KEY)
+    return response.text
 
 # Start socket connection
 socketManager = SocketManager()
