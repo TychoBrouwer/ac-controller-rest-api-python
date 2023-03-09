@@ -192,7 +192,6 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
       // Iterate through settings to update
       for (JsonPair pair : requestJson["settings"].as<JsonObject>())
       {
-        // Serial.println(pair.key().c_str());
         // Set new state of AC
         setAcNextState(pair.key().c_str(), pair.value().as<const char *>());
 
@@ -222,10 +221,11 @@ void receiveIR()
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
       // Get state from received char
+      stdAc::state_t state;
       stdAc::state_t initState;
       IRAcUtils::decodeToState(&RecvResults, &initState);
 
-      ac.initState(&initState); 
+      ac.initState(&state, initState.protocol, initState.model, initState.power, initState.mode, initState.degrees, initState.celsius, initState.fanspeed, initState.swingv, initState.swingh, initState.quiet, initState.turbo, initState.econo, initState.light, initState.filter, initState.clean, initState.beep, initState.sleep, initState.clock);
     }
 
     // Receive the next value
