@@ -16,6 +16,7 @@ char *WIFI_PASSWORD = "72117123858228781469";
 const uint16_t kSendPin = 2;
 // IRsend irsend(kSendPin);
 IRac ac(kSendPin);
+stdAc::state_t state;
 
 // IR Receive class
 const uint16_t kRecvPin = 22;
@@ -33,63 +34,44 @@ WebSocketsClient webSocket;
 bool socketConnected = false;
 
 // Function to convert bool to string 1 or 0
-const char *boolToChar(bool state)
-{
-  return state ? "1" : "0";
-}
-
-// Function to convert bool to string 1 or 0
 bool charToBool(const char *state)
 {
   return state == "1";
 }
 
-// Function to contruct JSON state string for sending to the server
-char *stateToString(stdAc::state_t state)
+char *stringToChar(String string)
 {
-  // Convert degrees float into char
-  char *degrees;
-  dtostrf(state.degrees, 0, 1, degrees);
+  int len = string.length() + 1;
+  char *buf = new char[len];
+  string.toCharArray(buf, len);
 
+  return buf;
+}
+
+// Function to contruct JSON state string for sending to the server
+String stateToString()
+{
   // Construct JSON string
-  char *stateString = "{\"deviceID\":\"DEVICE IDENTIFIER\",";
-  strcat(stateString, "\"protocol\":\"");
-  strcat(stateString, (const char *)state.protocol);
-  strcat(stateString, "\",\"model\":\"");
-  strcat(stateString, (const char *)state.model);
-  strcat(stateString, "\",\"power\":\"");
-  strcat(stateString, boolToChar(state.power));
-  strcat(stateString, "\",\"mode\":\"");
-  strcat(stateString, (const char *)state.mode);
-  strcat(stateString, "\",\"degrees\":\"");
-  strcat(stateString, degrees);
-  strcat(stateString, "\",\"celsius\":\"");
-  strcat(stateString, boolToChar(state.celsius));
-  strcat(stateString, "\",\"fanspeed\":\"");
-  strcat(stateString, (const char *)state.fanspeed);
-  // strcat(stateString, "\",\"swingv\":\"");
-  // strcat(stateString, state.swingv);
-  // strcat(stateString, "\",\"swingh\":\"");
-  // strcat(stateString, state.swingh);
-  strcat(stateString, "\",\"quiet\":\"");
-  strcat(stateString, boolToChar(state.quiet));
-  strcat(stateString, "\",\"turbo\":\"");
-  strcat(stateString, boolToChar(state.turbo));
-  strcat(stateString, "\",\"econo\":\"");
-  strcat(stateString, boolToChar(state.econo));
-  strcat(stateString, "\",\"light\":\"");
-  strcat(stateString, boolToChar(state.light));
-  strcat(stateString, "\",\"filter\":\"");
-  strcat(stateString, boolToChar(state.filter));
-  strcat(stateString, "\",\"clean\":\"");
-  strcat(stateString, boolToChar(state.clean));
-  strcat(stateString, "\",\"beep\":\"");
-  strcat(stateString, boolToChar(state.beep));
-  strcat(stateString, "\",\"sleep\":\"");
-  strcat(stateString, (const char *)state.sleep);
-  strcat(stateString, "\",\"clock\":\"");
-  strcat(stateString, (const char *)state.clock);
-  strcat(stateString, "\"}");
+  String stateString = "\{\"deviceID\":\"DEVICE IDENTIFIER\",";
+  stateString = stateString + "\"protocol\":\"" + state.protocol;
+  stateString = stateString + "\"model\":\"" + state.model;
+  stateString = stateString + "\"power\":\"" + state.power;
+  stateString = stateString + "\"mode\":\"" + ac.opmodeToString(state.mode);
+  stateString = stateString + "\"degrees\":\"" + state.degrees;
+  stateString = stateString + "\"celsius\":\"" + state.celsius;
+  stateString = stateString + "\"fanspeed\":\"" + ac.fanspeedToString(state.fanspeed);
+  stateString = stateString + "\"swingv\":\"" + ac.swingvToString(state.swingv);
+  stateString = stateString + "\"swingh\":\"" + ac.swinghToString(state.swingh);
+  stateString = stateString + "\"quiet\":\"" + state.celsius;
+  stateString = stateString + "\"turbo\":\"" + state.turbo;
+  stateString = stateString + "\"econo\":\"" + state.econo;
+  stateString = stateString + "\"light\":\"" + state.light;
+  stateString = stateString + "\"filter\":\"" + state.filter;
+  stateString = stateString + "\"clean\":\"" + state.clean;
+  stateString = stateString + "\"beep\":\"" + state.beep;
+  stateString = stateString + "\"sleep\":\"" + state.sleep;
+  stateString = stateString + "\"clock\":\"" + state.clock;
+  stateString = stateString + "\"}";
 
   return stateString;
 }
@@ -199,7 +181,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     if (requestJson["op"] == "get-settings")
     {
       // Get JSON state char
-      const char *stateString = stateToString(ac.getState());
+      const char *stateString = stringToChar(stateToString());
 
       // Send settings to server
       webSocket.sendTXT(stateString);
@@ -209,6 +191,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
       // Iterate through settings to update
       for (JsonPair pair : requestJson["settings"].as<JsonObject>())
       {
+        // Serial.println(pair.key().c_str());
         // Set new state of AC
         setAcNext(pair.key().c_str(), pair.value().as<const char *>());
 
@@ -238,11 +221,10 @@ void receiveIR()
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
       // Get state from received char
-      stdAc::state_t *state;
-      IRAcUtils::decodeToState(&RecvResults, state);
+      // IRAcUtils::decodeToState(&RecvResults, state);
 
       // Set AC state to received state
-      ac.initState(state);
+      ac.initState(&state);
     }
 
     // Receive the next value
@@ -275,6 +257,8 @@ void setup()
 
   // Start the receiver
   irrecv.enableIRIn();
+
+  ac.initState(&state, MITSUBISHI_HEAVY_152, true, true, stdAc::opmode_t::kAuto, 25, true, stdAc::fanspeed_t::kAuto, stdAc::swingv_t::kAuto, stdAc::swingh_t::kOff, false, false, false, false, false, false, false, -1, -1);
 }
 
 void loop()

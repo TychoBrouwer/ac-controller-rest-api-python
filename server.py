@@ -6,6 +6,7 @@ import httpx
 
 # Import files
 from constants import *
+from private import *
 from socket_manager import SocketManager
 
 # Initialize fastapi app
@@ -73,7 +74,7 @@ async def get_client(deviceID: str, clientID: str):
         return {'code': 500, 'res': 'error while sending data to device'}
 
     # Return data to client
-    return {'code': 200, 'res': 'successfully returned device settings', 'settings': data}
+    return {'code': 200, 'res': 'successfully returned device settings', 'settings': json.loads(data)}
 
 
 @app.get("/add-client")
@@ -109,6 +110,7 @@ devicePermissions = {
     'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
 }
 
+
 @app.get("/get-weather-data")
 async def get_weather_data():
     client = httpx.AsyncClient()
@@ -116,37 +118,39 @@ async def get_weather_data():
     result = await task
     result = json.loads(result)
 
-    '''Forecasts are formatted as follows:
-    [
-    ['CITY_NAME (String)', 
-    SUNRISE_TIME (Unix, current timezone), 
-    SUNSET_TIME (Unix, current timezone)
-    ]
+    # Forecasts are formatted as follows:
+    # [
+    # ['CITY_NAME (String)',
+    # SUNRISE_TIME (Unix, current timezone),
+    # SUNSET_TIME (Unix, current timezone)
+    # ]
 
-    ['TIMESTAMP (String) (YYYY-MM-DD HH:MM:SS)', 
-    TEMPERATURE (Celcius), 
-    CLOUD_COVERAGE (%), 
-    ],
-    'next observation'
-    ]
-    '''
+    # ['TIMESTAMP (String) (YYYY-MM-DD HH:MM:SS)',
+    # TEMPERATURE (Celcius),
+    # CLOUD_COVERAGE (%),
+    # ],
+    # 'next observation'
+    # ]
+
     forecast_list = []
 
-    #add location, sunrise and sunset data
+    # add location, sunrise and sunset data
     timezone = result['city']['timezone']
-    forecast_list.append([result['city']['name'], result['city']['sunrise'] + timezone, result['city']['sunset'] + timezone])
+    forecast_list.append([result['city']['name'], result['city']
+                         ['sunrise'] + timezone, result['city']['sunset'] + timezone])
 
     for i in result['list']:
         forecast = []
         forecast.append(i['dt_txt'])
-        forecast.append(i['main']['temp']-272.15) #convert to celsius
+        forecast.append(i['main']['temp']-272.15)  # convert to celsius
         forecast.append(i['clouds']['all'])
         forecast_list.append(forecast)
     print(forecast_list)
     return {"message": "Weather data received successfully"}
 
+
 async def api_request(client):
-    response = await client.get("http://api.openweathermap.org/data/2.5/forecast?q=" + LOCATION + "&cnt="+ OBSERVATION_COUNT + "&APPID=" + OPENWEATHERMAP_API_KEY)
+    response = await client.get("http://api.openweathermap.org/data/2.5/forecast?q=" + LOCATION + "&cnt=" + OBSERVATION_COUNT + "&APPID=" + OPENWEATHERMAP_API_KEY)
     return response.text
 
 # Start socket connection
