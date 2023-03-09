@@ -16,7 +16,7 @@ char *WIFI_PASSWORD = "72117123858228781469";
 const uint16_t kSendPin = 2;
 // IRsend irsend(kSendPin);
 IRac ac(kSendPin);
-stdAc::state_t state;
+// stdAc::state_t state;
 
 // IR Receive class
 const uint16_t kRecvPin = 22;
@@ -49,34 +49,34 @@ char *stringToChar(String string)
 }
 
 // Function to contruct JSON state string for sending to the server
-String stateToString()
+String stateToString(stdAc::state_t state)
 {
   // Construct JSON string
-  String stateString = "\{\"deviceID\":\"DEVICE IDENTIFIER\",";
-  stateString = stateString + "\"protocol\":\"" + state.protocol;
-  stateString = stateString + "\"model\":\"" + state.model;
-  stateString = stateString + "\"power\":\"" + state.power;
-  stateString = stateString + "\"mode\":\"" + ac.opmodeToString(state.mode);
-  stateString = stateString + "\"degrees\":\"" + state.degrees;
-  stateString = stateString + "\"celsius\":\"" + state.celsius;
-  stateString = stateString + "\"fanspeed\":\"" + ac.fanspeedToString(state.fanspeed);
-  stateString = stateString + "\"swingv\":\"" + ac.swingvToString(state.swingv);
-  stateString = stateString + "\"swingh\":\"" + ac.swinghToString(state.swingh);
-  stateString = stateString + "\"quiet\":\"" + state.celsius;
-  stateString = stateString + "\"turbo\":\"" + state.turbo;
-  stateString = stateString + "\"econo\":\"" + state.econo;
-  stateString = stateString + "\"light\":\"" + state.light;
-  stateString = stateString + "\"filter\":\"" + state.filter;
-  stateString = stateString + "\"clean\":\"" + state.clean;
-  stateString = stateString + "\"beep\":\"" + state.beep;
-  stateString = stateString + "\"sleep\":\"" + state.sleep;
-  stateString = stateString + "\"clock\":\"" + state.clock;
+  String stateString = "\{\"deviceID\":\"DEVICE IDENTIFIER";
+  stateString = stateString + "\",\"protocol\":\"" + state.protocol;
+  stateString = stateString + "\",\"model\":\""    + state.model;
+  stateString = stateString + "\",\"power\":\""    + state.power;
+  stateString = stateString + "\",\"mode\":\""     + ac.opmodeToString(state.mode);
+  stateString = stateString + "\",\"degrees\":\""  + state.degrees;
+  stateString = stateString + "\",\"celsius\":\""  + state.celsius;
+  stateString = stateString + "\",\"fanspeed\":\"" + ac.fanspeedToString(state.fanspeed);
+  stateString = stateString + "\",\"swingv\":\""   + ac.swingvToString(state.swingv);
+  stateString = stateString + "\",\"swingh\":\""   + ac.swinghToString(state.swingh);
+  stateString = stateString + "\",\"quiet\":\""    + state.celsius;
+  stateString = stateString + "\",\"turbo\":\""    + state.turbo;
+  stateString = stateString + "\",\"econo\":\""    + state.econo;
+  stateString = stateString + "\",\"light\":\""    + state.light;
+  stateString = stateString + "\",\"filter\":\""   + state.filter;
+  stateString = stateString + "\",\"clean\":\""    + state.clean;
+  stateString = stateString + "\",\"beep\":\""     + state.beep;
+  stateString = stateString + "\",\"sleep\":\""    + state.sleep;
+  stateString = stateString + "\",\"clock\":\""    + state.clock;
   stateString = stateString + "\"}";
 
   return stateString;
 }
 
-void setAcNext(const char *optionConst, const char *state)
+void setAcNextState(const char *optionConst, const char *state)
 {
   char *option = (char *)optionConst;
 
@@ -181,7 +181,8 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     if (requestJson["op"] == "get-settings")
     {
       // Get JSON state char
-      const char *stateString = stringToChar(stateToString());
+      stdAc::state_t state = ac.getState();
+      const char *stateString = stringToChar(stateToString(state));
 
       // Send settings to server
       webSocket.sendTXT(stateString);
@@ -193,7 +194,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
       {
         // Serial.println(pair.key().c_str());
         // Set new state of AC
-        setAcNext(pair.key().c_str(), pair.value().as<const char *>());
+        setAcNextState(pair.key().c_str(), pair.value().as<const char *>());
 
         // Send new state to AC
         ac.sendAc();
@@ -221,10 +222,10 @@ void receiveIR()
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
       // Get state from received char
-      // IRAcUtils::decodeToState(&RecvResults, state);
+      stdAc::state_t initState;
+      IRAcUtils::decodeToState(&RecvResults, &initState);
 
-      // Set AC state to received state
-      ac.initState(&state);
+      ac.initState(&initState); 
     }
 
     // Receive the next value
@@ -258,6 +259,7 @@ void setup()
   // Start the receiver
   irrecv.enableIRIn();
 
+  stdAc::state_t state;
   ac.initState(&state, MITSUBISHI_HEAVY_152, true, true, stdAc::opmode_t::kAuto, 25, true, stdAc::fanspeed_t::kAuto, stdAc::swingv_t::kAuto, stdAc::swingh_t::kOff, false, false, false, false, false, false, false, -1, -1);
 }
 

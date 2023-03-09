@@ -1,13 +1,13 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
 import json
-import asyncio
-import httpx
+import requests
 
 # Import files
 from constants import *
-from private import *
+from private import OPENWEATHERMAP_API_KEY
 from socket_manager import SocketManager
+from weather_manager import WeatherManager
 
 # Initialize fastapi app
 app = FastAPI()
@@ -105,32 +105,10 @@ async def websocket_endpoint(websocket: WebSocket):
     # Start handler for the socket
     await socketManager.handler(websocket)
 
-# Permissions of the client identifiers and their devices
-devicePermissions = {
-    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
-}
-
 
 @app.get("/get-weather-data")
 async def get_weather_data():
-    client = httpx.AsyncClient()
-    task = api_request(client)
-    result = await task
-    result = json.loads(result)
-
-    # Forecasts are formatted as follows:
-    # [
-    # ['CITY_NAME (String)',
-    # SUNRISE_TIME (Unix, current timezone),
-    # SUNSET_TIME (Unix, current timezone)
-    # ]
-
-    # ['TIMESTAMP (String) (YYYY-MM-DD HH:MM:SS)',
-    # TEMPERATURE (Celcius),
-    # CLOUD_COVERAGE (%),
-    # ],
-    # 'next observation'
-    # ]
+    result = weatherManager.getWeather()
 
     forecast_list = []
 
@@ -142,19 +120,20 @@ async def get_weather_data():
     for i in result['list']:
         forecast = []
         forecast.append(i['dt_txt'])
-        forecast.append(i['main']['temp']-272.15)  # convert to celsius
+        forecast.append(i['main']['temp'])
         forecast.append(i['clouds']['all'])
         forecast_list.append(forecast)
-    print(forecast_list)
-    return {"message": "Weather data received successfully"}
 
+    return {'code': 200, 'res': 'successfully returned weather data', 'forecast': forecast_list}
 
-async def api_request(client):
-    response = await client.get("http://api.openweathermap.org/data/2.5/forecast?q=" + LOCATION + "&cnt=" + OBSERVATION_COUNT + "&APPID=" + OPENWEATHERMAP_API_KEY)
-    return response.text
+# Permissions of the client identifiers and their devices
+devicePermissions = {
+    'DEVICE IDENTIFIER': ['CLIENT IDENTIFIER']
+}
 
 # Start socket connection
 socketManager = SocketManager()
+weatherManager = WeatherManager()
 
 # # Run uvicorn server
 if __name__ == "__main__":
