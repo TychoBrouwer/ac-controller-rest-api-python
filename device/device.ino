@@ -53,33 +53,31 @@ String stateToString(stdAc::state_t state)
 {
   // Construct JSON string
   String stateString = "\{\"deviceID\":\"DEVICE IDENTIFIER";
-  stateString = stateString + "\",\"protocol\":\"" + state.protocol;
-  stateString = stateString + "\",\"model\":\""    + state.model;
-  stateString = stateString + "\",\"power\":\""    + state.power;
-  stateString = stateString + "\",\"mode\":\""     + ac.opmodeToString(state.mode);
-  stateString = stateString + "\",\"degrees\":\""  + state.degrees;
-  stateString = stateString + "\",\"celsius\":\""  + state.celsius;
+  stateString = stateString + "\",\"protocol\":\"" + typeToString(state.protocol);
+  stateString = stateString + "\",\"model\":\"" + state.model;
+  stateString = stateString + "\",\"power\":\"" + state.power;
+  stateString = stateString + "\",\"mode\":\"" + ac.opmodeToString(state.mode);
+  stateString = stateString + "\",\"degrees\":\"" + state.degrees;
+  stateString = stateString + "\",\"celsius\":\"" + state.celsius;
   stateString = stateString + "\",\"fanspeed\":\"" + ac.fanspeedToString(state.fanspeed);
-  stateString = stateString + "\",\"swingv\":\""   + ac.swingvToString(state.swingv);
-  stateString = stateString + "\",\"swingh\":\""   + ac.swinghToString(state.swingh);
-  stateString = stateString + "\",\"quiet\":\""    + state.celsius;
-  stateString = stateString + "\",\"turbo\":\""    + state.turbo;
-  stateString = stateString + "\",\"econo\":\""    + state.econo;
-  stateString = stateString + "\",\"light\":\""    + state.light;
-  stateString = stateString + "\",\"filter\":\""   + state.filter;
-  stateString = stateString + "\",\"clean\":\""    + state.clean;
-  stateString = stateString + "\",\"beep\":\""     + state.beep;
-  stateString = stateString + "\",\"sleep\":\""    + state.sleep;
-  stateString = stateString + "\",\"clock\":\""    + state.clock;
+  stateString = stateString + "\",\"swingv\":\"" + ac.swingvToString(state.swingv);
+  stateString = stateString + "\",\"swingh\":\"" + ac.swinghToString(state.swingh);
+  stateString = stateString + "\",\"quiet\":\"" + state.celsius;
+  stateString = stateString + "\",\"turbo\":\"" + state.turbo;
+  stateString = stateString + "\",\"econo\":\"" + state.econo;
+  stateString = stateString + "\",\"light\":\"" + state.light;
+  stateString = stateString + "\",\"filter\":\"" + state.filter;
+  stateString = stateString + "\",\"clean\":\"" + state.clean;
+  stateString = stateString + "\",\"beep\":\"" + state.beep;
+  stateString = stateString + "\",\"sleep\":\"" + state.sleep;
+  stateString = stateString + "\",\"clock\":\"" + state.clock;
   stateString = stateString + "\"}";
 
   return stateString;
 }
 
-void setAcNextState(const char *optionConst, const char *stateValue)
+void setAcNextState(const char *option, const char *stateValue)
 {
-  char *option = (char *)optionConst;
-
   if (strcmp(option, "model") == 0)
   {
     state.model = ac.strToModel(stateValue);
@@ -150,13 +148,13 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     // Set socket connection to false and print disconnected once
     if (socketConnected == true)
     {
-      Serial.println("[WSc] Disconnected!");
+      Serial.println(F("[WSc] Disconnected!"));
     }
     socketConnected = false;
 
     break;
   case WStype_CONNECTED:
-    Serial.println("[WSc] Connected to websocket");
+    Serial.println(F("[WSc] Connected to websocket"));
 
     // Set socket connection to true
     socketConnected = true;
@@ -175,7 +173,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     }
 
     // Parse request data
-    DynamicJsonDocument requestJson(1024);
+    DynamicJsonDocument requestJson(512);
     deserializeJson(requestJson, (char *)payload);
 
     if (requestJson["op"] == "get-settings")
@@ -239,12 +237,12 @@ void setup()
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    Serial.print(".");
+    Serial.print(F("."));
   }
 
   Serial.println();
-  Serial.println("WiFi connected");
-  Serial.print("IP address: ");
+  Serial.println(F("WiFi connected"));
+  Serial.print(F("IP address: "));
   Serial.println(WiFi.localIP());
 
   // Begin websocket
@@ -253,7 +251,7 @@ void setup()
 
   // Start the receiver
   irrecv.enableIRIn();
-  
+
   // Temporarily set defaults
   state.protocol = decode_type_t::MITSUBISHI_HEAVY_152;
   state.model = 1;
