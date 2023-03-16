@@ -16,7 +16,7 @@ char *WIFI_PASSWORD = "72117123858228781469";
 const uint16_t kSendPin = 2;
 // IRsend irsend(kSendPin);
 IRac ac(kSendPin);
-// stdAc::state_t state;
+stdAc::state_t state;
 
 // IR Receive class
 const uint16_t kRecvPin = 22;
@@ -76,69 +76,69 @@ String stateToString(stdAc::state_t state)
   return stateString;
 }
 
-void setAcNextState(const char *optionConst, const char *state)
+void setAcNextState(const char *optionConst, const char *stateValue)
 {
   char *option = (char *)optionConst;
 
   if (strcmp(option, "model") == 0)
   {
-    ac.next.model = ac.strToModel(state);
+    state.model = ac.strToModel(stateValue);
   }
   else if (strcmp(option, "power") == 0)
   {
-    ac.next.power = charToBool(state);
+    state.power = charToBool(stateValue);
   }
   else if (strcmp(option, "mode") == 0)
   {
-    ac.next.mode = ac.strToOpmode(state);
+    state.mode = ac.strToOpmode(stateValue);
   }
   else if (strcmp(option, "degrees") == 0)
   {
-    ac.next.degrees = atof(state);
+    state.degrees = atof(stateValue);
   }
   else if (strcmp(option, "celsius") == 0)
   {
-    ac.next.celsius = charToBool(state);
+    state.celsius = charToBool(stateValue);
   }
   else if (strcmp(option, "fanspeed") == 0)
   {
-    ac.next.fanspeed = ac.strToFanspeed(state);
+    state.fanspeed = ac.strToFanspeed(stateValue);
   }
   else if (strcmp(option, "quiet") == 0)
   {
-    ac.next.quiet = charToBool(state);
+    state.quiet = charToBool(stateValue);
   }
   else if (strcmp(option, "turbo") == 0)
   {
-    ac.next.turbo = charToBool(state);
+    state.turbo = charToBool(stateValue);
   }
   else if (strcmp(option, "econo") == 0)
   {
-    ac.next.econo = charToBool(state);
+    state.econo = charToBool(stateValue);
   }
   else if (strcmp(option, "light") == 0)
   {
-    ac.next.light = charToBool(state);
+    state.light = charToBool(stateValue);
   }
   else if (strcmp(option, "filter") == 0)
   {
-    ac.next.filter = charToBool(state);
+    state.filter = charToBool(stateValue);
   }
   else if (strcmp(option, "clean") == 0)
   {
-    ac.next.clean = charToBool(state);
+    state.clean = charToBool(stateValue);
   }
   else if (strcmp(option, "beep") == 0)
   {
-    ac.next.beep = charToBool(state);
+    state.beep = charToBool(stateValue);
   }
   else if (strcmp(option, "sleep") == 0)
   {
-    ac.next.sleep = atoi(state);
+    state.sleep = atoi(stateValue);
   }
   else if (strcmp(option, "clock") == 0)
   {
-    ac.next.clock = atoi(state);
+    state.clock = atoi(stateValue);
   }
 }
 
@@ -181,7 +181,6 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     if (requestJson["op"] == "get-settings")
     {
       // Get JSON state char
-      stdAc::state_t state = ac.getState();
       const char *stateString = stringToChar(stateToString(state));
 
       // Send settings to server
@@ -196,7 +195,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
         setAcNextState(pair.key().c_str(), pair.value().as<const char *>());
 
         // Send new state to AC
-        ac.sendAc();
+        ac.sendAc(state, &state);
       }
     }
 
@@ -215,17 +214,13 @@ void receiveIR()
   // Decode results
   if (irrecv.decode(&RecvResults))
   {
-    Serial.println(RecvResults.decode_type);
-
     // Check if protocol detected is supported by library
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
       // Get state from received char
-      stdAc::state_t state;
-      stdAc::state_t initState;
-      IRAcUtils::decodeToState(&RecvResults, &initState);
+      IRAcUtils::decodeToState(&RecvResults, &state);
 
-      ac.initState(&state, initState.protocol, initState.model, initState.power, initState.mode, initState.degrees, initState.celsius, initState.fanspeed, initState.swingv, initState.swingh, initState.quiet, initState.turbo, initState.econo, initState.light, initState.filter, initState.clean, initState.beep, initState.sleep, initState.clock);
+      ac.sendAc(state, &state);
     }
 
     // Receive the next value
@@ -258,9 +253,26 @@ void setup()
 
   // Start the receiver
   irrecv.enableIRIn();
-
-  stdAc::state_t state;
-  ac.initState(&state, MITSUBISHI_HEAVY_152, true, true, stdAc::opmode_t::kAuto, 25, true, stdAc::fanspeed_t::kAuto, stdAc::swingv_t::kAuto, stdAc::swingh_t::kOff, false, false, false, false, false, false, false, -1, -1);
+  
+  // Temporarily set defaults
+  state.protocol = decode_type_t::MITSUBISHI_HEAVY_152;
+  state.model = 1;
+  state.power = true;
+  state.mode = stdAc::opmode_t::kAuto;
+  state.degrees = 22;
+  state.fanspeed = stdAc::fanspeed_t::kAuto;
+  state.swingv = stdAc::swingv_t::kAuto;
+  state.swingh = stdAc::swingh_t::kOff;
+  state.quiet = true;
+  state.turbo = false;
+  state.econo = false;
+  state.light = false;
+  state.filter = false;
+  state.clean = false;
+  state.beep = false;
+  state.sleep = -1;
+  state.clock = -1;
+  ac.sendAc(state, &state);
 }
 
 void loop()
