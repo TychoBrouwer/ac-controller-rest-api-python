@@ -8,30 +8,43 @@
 #include <IRutils.h>
 #include <IRrecv.h>
 
-// WiFi credentials
-char *WIFI_SSID = "FRITZ!Box 7560 BH";
-char *WIFI_PASSWORD = "72117123858228781469";
+#define DEBUG true
+
+#if (DEBUG)
+#define SERIAL_BEGIN()  { Serial.begin(115200); }
+#define PRINTS(s)       { Serial.print(F(s)); }
+#define PRINT(s,v)      { Serial.print(F(s)); Serial.println(v); }
+#define PRINTF(s,v)     { Serial.print(F(s)); Serial.printf("%s\n", v); }
+#else
+#define SERIAL_BEGIN()
+#define PRINTS(s)
+#define PRINT(s,v)
+#define PRINTF(s,v)
+#endif
+
+#define kSendPin 2
+#define kRecvPin 22
+
+#define Red_LED_pin 32
+#define Green_LED_pin 33
 
 // Commom AC class
-const uint16_t kSendPin = 2;
-// IRsend irsend(kSendPin);
 IRac ac(kSendPin);
 stdAc::state_t state;
 
 // IR Receive class
-const uint16_t kRecvPin = 22;
 IRrecv irrecv(kRecvPin);
-
-// LED pins
-const int Red_LED_pin = 32;
-const int Green_LED_pin = 33;
-
-// Client indentifier
-char *deviceID = "DEVICE IDENTIFIER";
 
 // Web socket client
 WebSocketsClient webSocket;
 bool socketConnected = false;
+
+// WiFi credentials
+char *WIFI_SSID = "FRITZ!Box 7560 BH";
+char *WIFI_PASSWORD = "72117123858228781469";
+
+// Client indentifier
+char *deviceID = "DEVICE IDENTIFIER";
 
 // Function to convert bool to string 1 or 0
 bool charToBool(const char *state)
@@ -48,7 +61,6 @@ char *stringToChar(String string)
   return buf;
 }
 
-// Function to contruct JSON state string for sending to the server
 String stateToString(stdAc::state_t state)
 {
   // Construct JSON string
@@ -72,6 +84,8 @@ String stateToString(stdAc::state_t state)
   stateString = stateString + "\",\"sleep\":\"" + state.sleep;
   stateString = stateString + "\",\"clock\":\"" + state.clock;
   stateString = stateString + "\"}";
+
+  PRINTS("[JSON] Successfully parsed state string\n");
 
   return stateString;
 }
@@ -138,6 +152,9 @@ void setAcNextState(const char *option, const char *stateValue)
   {
     state.clock = atoi(stateValue);
   }
+
+  PRINT("[AC] Succesfully set next AC status for ", option);
+  PRINT("[AC] to value ", stateValue);
 }
 
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
@@ -148,25 +165,27 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
     // Set socket connection to false and print disconnected once
     if (socketConnected == true)
     {
-      Serial.println(F("[WSc] Disconnected!"));
+      PRINTS("[WSc] Disconnected!\n");
     }
     socketConnected = false;
 
     break;
   case WStype_CONNECTED:
-    Serial.println(F("[WSc] Connected to websocket"));
+    PRINTS("[WSc] Connected to websocket\n");
 
     // Set socket connection to true
     socketConnected = true;
     break;
   case WStype_TEXT:
   {
-    Serial.printf("[WSc] %s\n", payload);
+    PRINTF("[WSc] ", payload);
 
     if (strcmp((char *)payload, "Server is working!") == 0)
     {
       // Send device ID to server
       webSocket.sendTXT(deviceID);
+
+      PRINTS("[WSc] Send running server conformation\n");
 
       // Break early
       break;
@@ -197,28 +216,46 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
       }
     }
 
+    PRINTS("[WSc] Successfully handled websocket request\n");
+
     break;
   }
   default:
+    PRINTS("[WSc] Unrecognised websocket event type\n");
+
     break;
   }
 }
 
 void receiveIR()
 {
+  // Debug for testing
+  PRINTS("[AC] IR data received\n");
+
   // IR receive results
   decode_results RecvResults;
 
   // Decode results
   if (irrecv.decode(&RecvResults))
   {
+    // Debug for testing
+    PRINTS("[AC] IR data successfully decoded\n");
+
     // Check if protocol detected is supported by library
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
+      PRINT("[AC] AC protocol is supported: ", typeToString(RecvResults.decode_type));
+
       // Get state from received char
       IRAcUtils::decodeToState(&RecvResults, &state);
 
+      PRINT("[AC] Protocol: ", state.protocol);
+      PRINT("[AC] Model: ", state.model);
+      PRINT("[AC] Degrees: ", state.degrees);
+
       ac.sendAc(state, &state);
+
+      PRINTS("[AC] Initial state successfully set\n");
     }
 
     // Receive the next value
@@ -228,7 +265,7 @@ void receiveIR()
 
 void setup()
 {
-  Serial.begin(115200);
+  SERIAL_BEGIN();
 
   // Connect to WiFi network
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -237,40 +274,20 @@ void setup()
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    Serial.print(F("."));
+    PRINTS(".");
   }
 
-  Serial.println();
-  Serial.println(F("WiFi connected"));
-  Serial.print(F("IP address: "));
-  Serial.println(WiFi.localIP());
+  PRINTS("\n");
+  PRINT("[WiFi] Connected at IP address: ", WiFi.localIP());
 
   // Begin websocket
   webSocket.beginSSL("accontroller.tbrouwer.com", 443, "/ws");
   webSocket.onEvent(webSocketEvent);
 
+  PRINTS("[WSc] Websocket created\n");
+
   // Start the receiver
   irrecv.enableIRIn();
-
-  // Temporarily set defaults
-  state.protocol = decode_type_t::MITSUBISHI_HEAVY_152;
-  state.model = 1;
-  state.power = true;
-  state.mode = stdAc::opmode_t::kAuto;
-  state.degrees = 22;
-  state.fanspeed = stdAc::fanspeed_t::kAuto;
-  state.swingv = stdAc::swingv_t::kAuto;
-  state.swingh = stdAc::swingh_t::kOff;
-  state.quiet = true;
-  state.turbo = false;
-  state.econo = false;
-  state.light = false;
-  state.filter = false;
-  state.clean = false;
-  state.beep = false;
-  state.sleep = -1;
-  state.clock = -1;
-  ac.sendAc(state, &state);
 }
 
 void loop()
