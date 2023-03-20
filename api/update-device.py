@@ -7,7 +7,7 @@ from constants import SERVER_ADDRESS
 operation = {
     'op': 'update-settings',
     'settings': {
-        'degrees': '26',
+        'power': '0',
     }
 }
 

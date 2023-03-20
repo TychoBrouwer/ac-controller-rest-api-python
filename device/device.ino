@@ -33,15 +33,17 @@ IRac ac(kSendPin);
 stdAc::state_t state;
 
 // IR Receive class
-IRrecv irrecv(kRecvPin);
+const uint16_t kCaptureBufferSize = 1024;
+const uint8_t kTimeout = 50;
+IRrecv irrecv(kRecvPin, kCaptureBufferSize, kTimeout, true);
 
 // Web socket client
 WebSocketsClient webSocket;
 bool socketConnected = false;
 
 // WiFi credentials
-char *WIFI_SSID = "FRITZ!Box 7560 BH";
-char *WIFI_PASSWORD = "72117123858228781469";
+char *WIFI_SSID = "";
+char *WIFI_PASSWORD = "";
 
 // Client indentifier
 char *deviceID = "DEVICE IDENTIFIER";
@@ -215,6 +217,10 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
         ac.sendAc(state, &state);
       }
     }
+    else if (requestJson["op"] == "update-weather")
+    {
+
+    }
 
     PRINTS("[WSc] Successfully handled websocket request\n");
 
@@ -229,9 +235,6 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 
 void receiveIR()
 {
-  // Debug for testing
-  PRINTS("[AC] IR data received\n");
-
   // IR receive results
   decode_results RecvResults;
 
@@ -239,7 +242,7 @@ void receiveIR()
   if (irrecv.decode(&RecvResults))
   {
     // Debug for testing
-    PRINTS("[AC] IR data successfully decoded\n");
+    PRINT("[AC] IR data successfully decoded", typeToString(RecvResults.decode_type));
 
     // Check if protocol detected is supported by library
     if (ac.isProtocolSupported(RecvResults.decode_type))
@@ -251,7 +254,6 @@ void receiveIR()
 
       PRINT("[AC] Protocol: ", state.protocol);
       PRINT("[AC] Model: ", state.model);
-      PRINT("[AC] Degrees: ", state.degrees);
 
       ac.sendAc(state, &state);
 
