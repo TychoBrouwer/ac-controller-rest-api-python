@@ -68,8 +68,8 @@ uint16_t timeoutPeriod = 1000;
 
 // Function to convert bool to string 1 or 0
 bool charToBool(const char *state)
-{
-  return state == "1";
+{  
+  return strcmp(state, "1") == 0;
 }
 
 char *stringToChar(String string)

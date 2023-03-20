@@ -7,7 +7,7 @@ from constants import SERVER_ADDRESS
 operation = {
     'op': 'update-settings',
     'settings': {
-        'power': '0',
+        'degrees': '20',
     }
 }
 
@@ -23,4 +23,4 @@ data = {
 x = requests.get(url, params=data)
 
 # Get returned data (update request result)
-print(x.text)
+print(data)

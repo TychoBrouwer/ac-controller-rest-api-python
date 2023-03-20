@@ -1,0 +1,60 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  color: #f1f1f1;
+}
+
+button {
+  color: #121212;
+}
+
+html {
+  background-color: #555;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+#header {
+  text-align: center;
+}
+
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.control {
+  width: 300px;
+  justify-content: center;
+  text-align: center;
+  margin: 15px;
+  padding: 10px;
+  background-color: #333;
+}
+
+.control-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.control-buttons div {
+  margin: 5px 0 5px 10px;
+  display: flex;
+}
+
+.control-buttons p {
+  line-height: normal;
+  margin: 0;
+}
+
+#degrees .control-buttons div {
+  margin: 5px 10px;
+}
+
+#submit {
+  margin: 30px auto;
+}
