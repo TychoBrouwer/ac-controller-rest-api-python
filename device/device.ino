@@ -11,15 +11,29 @@
 #define DEBUG true
 
 #if (DEBUG)
-#define SERIAL_BEGIN()  { Serial.begin(115200); }
-#define PRINTS(s)       { Serial.print(F(s)); }
-#define PRINT(s,v)      { Serial.print(F(s)); Serial.println(v); }
-#define PRINTF(s,v)     { Serial.print(F(s)); Serial.printf("%s\n", v); }
+#define SERIAL_BEGIN()    \
+  {                       \
+    Serial.begin(115200); \
+  }
+#define PRINTS(s)       \
+  {                     \
+    Serial.print(F(s)); \
+  }
+#define PRINT(s, v)     \
+  {                     \
+    Serial.print(F(s)); \
+    Serial.println(v);  \
+  }
+#define PRINTF(s, v)          \
+  {                           \
+    Serial.print(F(s));       \
+    Serial.printf("%s\n", v); \
+  }
 #else
 #define SERIAL_BEGIN()
 #define PRINTS(s)
-#define PRINT(s,v)
-#define PRINTF(s,v)
+#define PRINT(s, v)
+#define PRINTF(s, v)
 #endif
 
 #define kSendPin 2
@@ -42,11 +56,15 @@ WebSocketsClient webSocket;
 bool socketConnected = false;
 
 // WiFi credentials
-char *WIFI_SSID = "";
-char *WIFI_PASSWORD = "";
+char *WIFI_SSID = "FRITZ!Box 7560 BH";
+char *WIFI_PASSWORD = "72117123858228781469";
 
 // Client indentifier
 char *deviceID = "DEVICE IDENTIFIER";
+
+// Timeout variables for during sending
+uint32_t timeoutTime = 0;
+uint16_t timeoutPeriod = 1000;
 
 // Function to convert bool to string 1 or 0
 bool charToBool(const char *state)
@@ -214,12 +232,12 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
         setAcNextState(pair.key().c_str(), pair.value().as<const char *>());
 
         // Send new state to AC
+        timeoutTime = millis();
         ac.sendAc(state, &state);
       }
     }
     else if (requestJson["op"] == "update-weather")
     {
-
     }
 
     PRINTS("[WSc] Successfully handled websocket request\n");
@@ -242,12 +260,12 @@ void receiveIR()
   if (irrecv.decode(&RecvResults))
   {
     // Debug for testing
-    PRINT("[AC] IR data successfully decoded", typeToString(RecvResults.decode_type));
+    PRINT("[AC] IR data successfully decoded ", typeToString(RecvResults.decode_type));
 
     // Check if protocol detected is supported by library
     if (ac.isProtocolSupported(RecvResults.decode_type))
     {
-      PRINT("[AC] AC protocol is supported: ", typeToString(RecvResults.decode_type));
+      PRINTS("[AC] AC protocol is supported");
 
       // Get state from received char
       IRAcUtils::decodeToState(&RecvResults, &state);
@@ -298,5 +316,8 @@ void loop()
   webSocket.loop();
 
   // If new IR message received
-  receiveIR();
+  if (millis() > timeoutTime + timeoutPeriod)
+  {
+    receiveIR();
+  }
 }
