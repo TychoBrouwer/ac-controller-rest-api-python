@@ -6,7 +6,6 @@ import requests
 
 # Import files
 from constants import *
-from private import OPENWEATHERMAP_API_KEY
 from socket_manager import SocketManager
 from weather_manager import WeatherManager
 
