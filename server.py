@@ -6,7 +6,6 @@ import requests
 
 # Import files
 from constants import *
-from private import OPENWEATHERMAP_API_KEY
 from socket_manager import SocketManager
 from weather_manager import WeatherManager
 
@@ -121,23 +120,39 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/get-weather-data")
 async def get_weather_data():
-    result = weatherManager.getWeather()
+    result, time_unix = weatherManager.getWeather()
 
-    forecast_list = []
+    forecast_dict = dict()
 
-    # add location, sunrise and sunset data
-    timezone = result['city']['timezone']
-    forecast_list.append([result['city']['name'], result['city']
-                         ['sunrise'] + timezone, result['city']['sunset'] + timezone])
+    # add location, time and sunrise and sunset data
+    forecast_dict["address"] = result['resolvedAddress']
+    forecast_dict["currenttime"] = time_unix
+    #there might be more than 1 day in the report, but we assume the sun doesn't rise at midnight so to speak (for our target group at least)
+    forecast_dict["sunrise"] = result['days'][0]['sunriseEpoch']
+    forecast_dict["sunrset"] = result['days'][0]['sunsetEpoch']
 
-    for i in result['list']:
-        forecast = []
-        forecast.append(i['dt_txt'])
-        forecast.append(i['main']['temp'])
-        forecast.append(i['clouds']['all'])
-        forecast_list.append(forecast)
 
-    return {'code': 200, 'res': 'successfully returned weather data', 'forecast': forecast_list}
+    #PROBLEM: COUNTS FROM 0:00 TILL THE END OF THE DAY
+    #this is how the api will always respond, it will give the entire day.
+    #need to check the entries that are relevant to us
+    #suggest ESP32 calls this 5 minutes before the next hour
+    current_time_index = 0
+    while result['days'][0]['hours'][current_time_index]['datetimeEpoch'] < forecast_dict["currenttime"]:
+        current_time_index += 1
+        if(current_time_index > 23): #failsafe
+            break
+    
+    forecast_dict["hours"] = dict()
+    for i in range(OBSERVATION_COUNT):
+        forecast = dict()
+        loc = result['days'][0]['hours'][i+current_time_index]
+        forecast["time"] = loc['datetimeEpoch']
+        forecast['temp'] = loc['temp']
+        forecast['solarRadiation'] = loc['solarradiation']
+        forecast_dict["hours"][i] = forecast #index them by hours
+
+
+    return {'code': 200, 'res': 'successfully returned weather data', 'forecast': forecast_dict}
 
 # Permissions of the client identifiers and their devices
 devicePermissions = {
