@@ -123,6 +123,9 @@ async def get_weather_data():
     result, time_unix = weatherManager.getWeather()
 
     forecast_dict = dict()
+    
+    #flag for the ESP32
+    forecast_dict["op"] = "update-weather"
 
     # add location, time and sunrise and sunset data
     forecast_dict["address"] = result['resolvedAddress']
