@@ -103,6 +103,10 @@ class ACcontroller {
 
   };
 
+  changeUnit() {
+
+  };
+
   changeTemp(increase) {
     const temp = this.toUpdate.degrees ? this.toUpdate.degrees : this.acState.degrees;
     this.toUpdate.degrees = String(parseInt(temp) + (increase ? 1 : -1));
