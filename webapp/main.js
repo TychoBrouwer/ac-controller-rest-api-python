@@ -99,8 +99,10 @@ class ACcontroller {
     this.setValue('power', this.toUpdate.power, true);
   };
 
-  changeMode() {
+  changeMode(newMode) {
+    this.toUpdate.mode = newMode;
 
+    this.setValue('mode', this.toUpdate.mode, true);
   };
 
   changeTemp(increase) {

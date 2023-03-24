@@ -20,7 +20,7 @@
       <h2>Power</h2>
       <div class="control-buttons">
         <button id="power" onclick="ACcontroller.changePower()">Change power</button>
-        <div>
+        <div class="span">
           <p class="value boolean"></p>
           <p class="value-update boolean"></p>
         </div>
@@ -29,8 +29,18 @@
     <div class="control" id="mode">
       <h2>Mode</h2>
       <div class="control-buttons">
-        <button id="mode" onclick="ACcontroller.changeMode()">Change mode</button>
-        <div>
+        <div id="mode" class="dropdown">
+          <span>Change mode</span>
+          <div class="dropdown-content">
+            <button onclick="ACcontroller.changeMode('Off')">Off</button>
+            <button onclick="ACcontroller.changeMode('Auto')">Auto</button>
+            <button onclick="ACcontroller.changeMode('Cool')">Cool</button>
+            <button onclick="ACcontroller.changeMode('Heat')">Heat</button>
+            <button onclick="ACcontroller.changeMode('Dry')">Dry</button>
+            <button onclick="ACcontroller.changeMode('Fan')">Fan</button>
+          </div>
+        </div>
+        <div class="span">
           <p class="value"></p>
           <p class="value-update"></p>
         </div>
@@ -40,7 +50,7 @@
       <h2>Temperature</h2>
       <div class="control-buttons">
         <button id="temp-up" onclick="ACcontroller.changeTemp(true)">+</button>
-        <div>
+        <div class="span">
           <p class="value integer"></p>
           <p class="value-update integer"></p>
         </div>

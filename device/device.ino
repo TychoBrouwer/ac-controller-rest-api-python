@@ -56,8 +56,8 @@ WebSocketsClient webSocket;
 bool socketConnected = false;
 
 // WiFi credentials
-char *WIFI_SSID = "FRITZ!Box 7560 BH";
-char *WIFI_PASSWORD = "72117123858228781469";
+char *WIFI_SSID = "Tycho iPhone 12";
+char *WIFI_PASSWORD = "k58igabvm8gor";
 
 // Client indentifier
 char *deviceID = "DEVICE IDENTIFIER";
