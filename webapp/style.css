@@ -6,7 +6,20 @@
 }
 
 button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 5px 10px;
+  display: flex;
   color: #121212;
+  align-items: center;
+}
+
+button span {
+  color: #121212;
+}
+
+button:hover {
+  background-color: #d1d1d1;
 }
 
 html {
@@ -15,6 +28,12 @@ html {
 
 body {
   font-family: "Roboto", sans-serif;
+}
+
+.crossed-out {
+  text-decoration: line-through;
+  text-decoration-color: red;
+  color: red !important;
 }
 
 #header {
@@ -39,41 +58,80 @@ body {
 .control-buttons {
   display: flex;
   justify-content: center;
+  height: 28px;
 }
 
-.control-buttons .span {
-  padding: 5px 0 5px 10px;
+.control-buttons span p {
+  width: 20px;
+}
+
+.control-buttons span.boolean {
   display: flex;
+  width: 28px;
+  justify-content: space-evenly;
+  margin: auto;
 }
 
 .control-buttons p {
-  line-height: normal;
+  line-height: 28px;
   margin: 0;
 }
 
 .control-buttons .dropdown {
   position: relative;
-  display: inline-block;
+  width: 180px;
+}
+
+.control-buttons .dropdown-title {
+  background-color: #f1f1f1;
+  width: 100%;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.control-buttons .dropdown-title span {
+  color: #121212;
+  display: flex;
+  width: 80px;
+  justify-content: center;
+}
+
+.control-buttons .dropdown:hover .dropdown-title {
+  background-color: #d1d1d1;
 }
 
 .control-buttons .dropdown-content {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  min-width: 160px;
+  width: -webkit-fill-available;
   z-index: 1;
 }
 
 .control-buttons .dropdown-content button {
+  width: inherit;
   display: block;
 }
 
-.dropdown:hover .dropdown-content {
+.control-buttons .dropdown:hover .dropdown-content {
   display: block;
 }
 
-#degrees .control-buttons div {
-  margin: 5px 10px;
+#degrees .control-buttons span {
+  padding: 0 10px;
+  display: flex;
+  width: 80px;
+  justify-content: space-evenly;
+}
+
+#degrees .control-buttons button {
+  width: 28px;
+  height: 28px;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  align-items: center;
 }
 
 #submit {

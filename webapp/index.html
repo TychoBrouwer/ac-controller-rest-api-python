@@ -19,30 +19,28 @@
     <div class="control" id="power">
       <h2>Power</h2>
       <div class="control-buttons">
-        <button id="power" onclick="ACcontroller.changePower()">Change power</button>
-        <div class="span">
-          <p class="value boolean"></p>
-          <p class="value-update boolean"></p>
-        </div>
+        <button onclick="ACcontroller.changeBoolean('power')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
       </div>
     </div>
     <div class="control" id="mode">
       <h2>Mode</h2>
       <div class="control-buttons">
-        <div id="mode" class="dropdown">
-          <span>Change mode</span>
-          <div class="dropdown-content">
-            <button onclick="ACcontroller.changeMode('Off')">Off</button>
-            <button onclick="ACcontroller.changeMode('Auto')">Auto</button>
-            <button onclick="ACcontroller.changeMode('Cool')">Cool</button>
-            <button onclick="ACcontroller.changeMode('Heat')">Heat</button>
-            <button onclick="ACcontroller.changeMode('Dry')">Dry</button>
-            <button onclick="ACcontroller.changeMode('Fan')">Fan</button>
+        <div class="dropdown">
+          <div class="dropdown-title">
+            <span class="value"></span>
+            <span class="value-update"></span>
           </div>
-        </div>
-        <div class="span">
-          <p class="value"></p>
-          <p class="value-update"></p>
+          <div class="dropdown-content">
+            <button onclick="ACcontroller.changeString('Off', 'mode')">Off</button>
+            <button onclick="ACcontroller.changeString('Auto', 'mode')">Auto</button>
+            <button onclick="ACcontroller.changeString('Cool', 'mode')">Cool</button>
+            <button onclick="ACcontroller.changeString('Heat', 'mode')">Heat</button>
+            <button onclick="ACcontroller.changeString('Dry', 'mode')">Dry</button>
+            <button onclick="ACcontroller.changeString('Fan', 'mode')">Fan</button>
+          </div>
         </div>
       </div>
     </div>
@@ -50,12 +48,106 @@
       <h2>Temperature</h2>
       <div class="control-buttons">
         <button id="temp-up" onclick="ACcontroller.changeTemp(true)">+</button>
-        <div class="span">
+        <span>
           <p class="value integer"></p>
           <p class="value-update integer"></p>
-        </div>
+        </span>
         <button id="temp-down" onclick="ACcontroller.changeTemp(false)">-</button>
-        <button class="checkbox" id="unit" onclick="ACcontroller.changeUnit()"></button>
+      </div>
+    </div>
+    <div class="control" id="swingv">
+      <h2>Vertical Swing</h2>
+      <div class="control-buttons">
+        <div class="dropdown">
+          <div class="dropdown-title">
+            <span class="value"></span>
+            <span class="value-update"></span>
+          </div>
+          <div class="dropdown-content">
+            <button onclick="ACcontroller.changeString('Off', 'swingv')">Off</button>
+            <button onclick="ACcontroller.changeString('Auto', 'swingv')">Auto</button>
+            <button onclick="ACcontroller.changeString('LeftMax', 'swingv')">Max Left</button>
+            <button onclick="ACcontroller.changeString('Left', 'swingv')">Left</button>
+            <button onclick="ACcontroller.changeString('Middle', 'swingv')">Middle</button>
+            <button onclick="ACcontroller.changeString('Right', 'swingv')">Right</button>
+            <button onclick="ACcontroller.changeString('RightMax', 'swingv')">Max Right</button>
+            <button onclick="ACcontroller.changeString('Wide', 'swingv')">Wide</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="control" id="swingh">
+      <h2>Horizontal Swing</h2>
+      <div class="control-buttons">
+        <div class="dropdown">
+          <div class="dropdown-title">
+            <span class="value"></span>
+            <span class="value-update"></span>
+          </div>
+          <div class="dropdown-content">
+            <button onclick="ACcontroller.changeString('Off', 'swingh')">Off</button>
+            <button onclick="ACcontroller.changeString('Auto', 'swingh')">Auto</button>
+            <button onclick="ACcontroller.changeString('Highest', 'swingh')">Highest</button>
+            <button onclick="ACcontroller.changeString('High', 'swingh')">High</button>
+            <button onclick="ACcontroller.changeString('Middle', 'swingh')">Middle</button>
+            <button onclick="ACcontroller.changeString('Low', 'swingh')">Low</button>
+            <button onclick="ACcontroller.changeString('Lowest', 'swingh')">Lowest</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="control" id="quiet">
+      <h2>Quiet</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('beep')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
+      </div>
+    </div>
+    <div class="control" id="turbo">
+      <h2>Turbo</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('turbo')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
+      </div>
+    </div>
+    <div class="control" id="light">
+      <h2>Light</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('light')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
+      </div>
+    </div>
+    <div class="control" id="filter">
+      <h2>Filter</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('filter')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
+      </div>
+    </div>
+    <div class="control" id="clean">
+      <h2>Clean</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('clean')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
+      </div>
+    </div>
+    <div class="control" id="beep">
+      <h2>Beep</h2>
+      <div class="control-buttons">
+        <button onclick="ACcontroller.changeBoolean('sound')">
+          <span class="value boolean"></span>
+          <span class="value-update boolean"></span>
+        </button>
       </div>
     </div>
   </div>

@@ -55,7 +55,14 @@ class ACcontroller {
       Object.entries(this.toUpdate).forEach(([key, value]) => {
         this.acState[key] = value;
 
-        this.setValue(key, value, false);
+        let newValueText;
+        if (value === 'RightMax') {
+          newValueText = 'Max Right';
+        } else if (value === 'LeftMax') {
+          newValueText = 'Max Left';
+        }
+
+        this.setValue(key, newValueText || value, false);
         this.setValue(key, undefined, true);
       });
 
@@ -66,12 +73,10 @@ class ACcontroller {
   }
 
   setValue(key, value, update) {
-    let element;
-    if (update) {
-      element = document.getElementById(key)?.getElementsByClassName('value-update')[0];
-    } else {
-      element = document.getElementById(key)?.getElementsByClassName('value')[0];
-    }
+    let elementClass;
+    update ? elementClass = 'value-update' : elementClass = 'value';
+
+    const element = document.getElementById(key)?.getElementsByClassName(elementClass)[0];
 
     if (!element) {
       return;
@@ -80,6 +85,12 @@ class ACcontroller {
     if (value == undefined) {
       element.innerHTML = '';
       return;
+    }
+
+    if (update) {
+      document.getElementById(key)?.getElementsByClassName('value')[0]?.classList.add('crossed-out');
+    } else {
+      element.classList.remove('crossed-out');
     }
 
     const classes = element.classList;
@@ -93,20 +104,30 @@ class ACcontroller {
     }
   }
 
-  changePower() {
-    this.toUpdate.power = this.acState.power === "0" ? "1" : "0";
+  changeBoolean(key) {
+    let value;
+    if (this.toUpdate[key]) {
+      value = this.toUpdate[key] === "0" ? "1" : "0";
+    } else {
+      value = this.acState[key] === "0" ? "1" : "0";
+    }
 
-    this.setValue('power', this.toUpdate.power, true);
+    this.toUpdate[key] = value;
+
+    this.setValue(key, value, true);
   };
 
-  changeMode(newMode) {
-    this.toUpdate.mode = newMode;
+  changeString(newValue, key) {
+    this.toUpdate[key] = newValue;
 
-    this.setValue('mode', this.toUpdate.mode, true);
-  };
+    let newValueText;
+    if (newValue === 'RightMax') {
+      newValueText = 'Max Right';
+    } else if (newValue === 'LeftMax') {
+      newValueText = 'Max Left';
+    }
 
-  changeUnit() {
-
+    this.setValue(key, newValueText || this.toUpdate[key], true);
   };
 
   changeTemp(increase) {
